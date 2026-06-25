@@ -323,23 +323,33 @@ The scenarios: S1–S5 cover selection/gate/loop; S6–S7 model tiers + escalati
 ## FAQ / Troubleshooting
 
 <details>
-<summary>Five common questions (warnings, sourcing deps, cancelling, cost, inline drift)</summary>
+<summary><b>1. The dependency check printed <code>[ ! ]</code> warnings. Is it broken?</b></summary>
 
-1. **The dependency check printed `[ ! ]` warnings. Is it broken?**
 No. The check is best-effort, so it warns rather than blocks. dreamteam resolves or substitutes missing pieces at runtime through the Caster and `find-skills`. The catch is that any path needing a missing dependency won't fire until you install the flagged item. An agent flagged `(may be built-in/plugin; verified at runtime)` is often already available and just isn't on disk where the check looks.
+</details>
 
-2. **Where do I get `superpowers` and `find-skills`?**
+<details>
+<summary><b>2. Where do I get <code>superpowers</code> and <code>find-skills</code>?</b></summary>
+
 See [Install → Step 1](#install) for the commands and sources.
+</details>
 
-3. **How do I cancel or abort a run?**
+<details>
+<summary><b>3. How do I cancel or abort a run?</b></summary>
+
 Dispatch is always background, so the run isn't holding your prompt. Stop it the way you stop any background agent work in your CLI: interrupt the session, or cancel the background task or Workflow. The conductor only integrates after a passing gate, so stopping mid-workstream leaves nothing half-merged. In-flight producers run in their own worktrees, which are cleaned up on a pass. Use `--autonomy confirm` or `step` if you want explicit stop points.
+</details>
 
-4. **How much does it cost, and how do I economize?**
+<details>
+<summary><b>4. How much does it cost, and how do I economize?</b></summary>
+
 A run spawns several agents, so it costs roughly N times a single prompt. See [Cost & scale](#cost--scale). Economize with `--cost cheap` (cheaper producers; reviewers stay `capable`), `--autonomy confirm` (gate spend at the crew and each verdict), and a tighter `--depth shallow|module`.
+</details>
 
-5. **It ran inline and didn't dispatch. Is that expected?**
+<details>
+<summary><b>5. It ran inline and didn't dispatch. Is that expected?</b></summary>
+
 No. dreamteam's conductor dispatches every workstream to a background agent. Once invoked, the session is sticky, so later artifact-producing tasks also go through dreamteam. If you see it editing files directly to produce a workstream, that's drift the skill guards against. A genuinely tiny, non-workstream edit, like a typo fix you asked for directly, may be done inline, but it gets announced as such first.
-
 </details>
 
 ## License
