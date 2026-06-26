@@ -6,7 +6,30 @@
   "homepage": "https://github.com/adnantaufique/dreamteam",
   "repository": "https://github.com/adnantaufique/dreamteam",
   "license": "Apache-2.0",
-  "keywords": ["orchestration", "multi-agent", "meta-orchestration", "skill", "code-review", "research", "quality-gate", "subagents", "cross-platform", "cost-aware"]
+  "keywords": ["orchestration", "multi-agent", "meta-orchestration", "skill", "code-review", "research", "quality-gate", "subagents", "cross-platform", "cost-aware"],
+  "agents": [
+    "./vendor/agency-agents/ai-engineer.md",
+    "./vendor/agency-agents/backend-architect.md",
+    "./vendor/agency-agents/code-reviewer.md",
+    "./vendor/agency-agents/devops-automator.md",
+    "./vendor/agency-agents/frontend-developer.md",
+    "./vendor/agency-agents/mobile-app-builder.md",
+    "./vendor/agency-agents/software-architect.md",
+    "./vendor/agency-agents/technical-writer.md",
+    "./vendor/agency-agents/reality-checker.md",
+    "./vendor/agency-agents/test-results-analyzer.md",
+    "./vendor/agency-agents/performance-benchmarker.md",
+    "./vendor/agency-agents/ui-designer.md",
+    "./vendor/ecc/methodology-reviewer.md",
+    "./vendor/ecc/security-engineer.md",
+    "./vendor/ecc/build-error-resolver.md",
+    "./vendor/ecc/pytorch-build-resolver.md",
+    "./vendor/superclaude/deep-research-agent.md",
+    "./vendor/superclaude/quality-engineer.md",
+    "./vendor/superclaude/root-cause-analyst.md",
+    "./vendor/superclaude/system-architect.md",
+    "./vendor/superclaude/python-expert.md"
+  ]
 }
 
 
