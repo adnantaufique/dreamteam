@@ -1,0 +1,12 @@
+dreamteam
+Copyright (c) 2026 Adnan
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product bundles components from third-party MIT-licensed projects.
+Full license texts, pinned source commits, and the list of bundled files are
+recorded in THIRD_PARTY_NOTICES.md.
+
+Bundled third-party MIT components:
+- agency-agents - Copyright (c) 2025 AgentLand Contributors             - https://github.com/msitarzewski/agency-agents
+- ECC           - Copyright (c) 2026 Affaan Mustafa                     - https://github.com/affaan-m/ECC
+- SuperClaude   - Copyright (c) 2024 SuperClaude Framework Contributors - https://github.com/SuperClaude-Org/SuperClaude_Framework
