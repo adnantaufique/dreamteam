@@ -62,7 +62,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 ## Invocation
 ```
 /dreamteam <task | plan-ref>
-      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit]
+      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit|ml-dev|debug|ux-designer|tutor]
       [--depth shallow|module|exhaustive] [--mode bugs|map]
       [--roster planner=…,producers=…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step]
@@ -75,7 +75,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 
 ## The spine
 1. **Resolve the dreamteam.** REQUIRED: follow `references/caster.md` (explicit `--roster/--profile/--skills` → use as-is; else profile match; else dispatch a Caster agent). Print the dreamteam + one line of rationale per pick — including each role's model tier (cheapest-that-fits per `references/caster.md`), printed next to each pick — show the abstract tier and the resolved concrete model for the active platform (e.g. standard → sonnet).
-2. **Pick the entry.** A plan-ref (a path to / inline copy of an already-reviewed step-by-step plan) → the core loop. A raw idea (anything else) → run the full-lifecycle wrapper first (REQUIRED: `references/wrapper.md`). `--profile audit` (or an audit-intent task) → **skip the wrapper + plan-writing → go straight to the audit fan-out** (`references/audit.md`); an audit has no idea to brainstorm and no plan to write.
+2. **Pick the entry.** A plan-ref (a path to / inline copy of an already-reviewed step-by-step plan) → the core loop. A raw idea (anything else) → run the full-lifecycle wrapper first (REQUIRED: `references/wrapper.md`). **`--profile audit` / `--profile debug` (or an audit-/debug-intent task) → skip the wrapper + plan-writing:** `audit` goes straight to the audit fan-out (`references/audit.md`) — no idea to brainstorm, no plan to write; `debug` goes **reproduce-first** straight to its investigate→fix loop — the failure *is* the spec, so there is nothing to brainstorm or plan (the gate enforces reproduce-then-resolve, `references/gate.md`). Both still run the produce→gate→fix→integrate loop (`audit`'s `integrate` is a no-op, `debug`'s lands the fix); only the wrapper + plan-writing are skipped.
 3. **Run the core loop** over each workstream. **For EVERY workstream → dispatch a producer; there is no inline path.** REQUIRED: `references/loop.md`, gating each via `references/gate.md`.
 4. **Report** each workstream's gate verdict; pause only for genuine decisions/blockers. Then run the retro (if `--retro` on, the default) and surface learnings + any proposed skill deltas (`references/retro.md`).
 
@@ -93,5 +93,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 REQUIRED SUB-SKILLS: `superpowers:brainstorming`, `superpowers:writing-plans`, `superpowers:using-git-worktrees`, `superpowers:verification-before-completion`, `superpowers:finishing-a-development-branch`, `find-skills`.
 OPTIONAL: `ponytail` — the external **enforcer** of dreamteam's native minimal-code principle (see Overview); when installed, the Caster attaches it to code-producing producers. The principle holds without it (the gate always checks over-engineering) — ponytail just enforces it harder. Cross-platform, like dreamteam.
 OPTIONAL: `karpathy-guidelines` — a second composed principle-enforcer for **code-producing** producers (surface assumptions, surgical/minimal-diff changes, verifiable success criteria); like `ponytail`, the Caster attaches it to code producers when installed (`find-skills`-gated, degrades gracefully if absent). Its guidelines already ride in `loop.md`/`gate.md` — composing the skill just makes producers carry them explicitly.
+OPTIONAL (highlighted): `superpowers:systematic-debugging` — the structured root-cause method dreamteam **reaches for on debug tasks and composes in the `debug` profile** (decision #7): attached to the investigator's `skills[]` when installed (`find-skills`-gated, degrades gracefully — `root-cause-analyst` investigates natively if absent). Pairs with the gate's **reproduce-then-resolve** check (`gate.md` §3).
+OPTIONAL: `ui-ux-pro-max` — the **depended** design skill the `ux-designer` profile composes onto `UI Designer` when installed (`find-skills`-gated, degrades gracefully — UI Designer designs natively if absent, and a11y stays **non-waivable** either way). Not vendored; install via `references/recommend.md`.
 OPTIONAL: `references/recommend.md` — when the best-fit skill isn't installed, the Caster surfaces an advisory recommendation (skills.sh + awesome-claude-code); an opt-in gated `setup` role can install an approved one. Skills-only; the Caster never installs.
 OPTIONAL: `references/audit.md` — the `audit` profile: read-only bug-finding / project-map sweeps that reuse the same loop + gate (no spec, no integrate). `--depth`/`--mode` tune it.
