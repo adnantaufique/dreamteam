@@ -9,42 +9,52 @@
   <img src="https://img.shields.io/badge/Claude_Code-plugin-1f6feb" alt="Claude Code plugin">
 </p>
 
-<p align="center"><b>Independently-verified multi-agent delivery for any task, with the least code that works.</b></p>
+<p align="center"><b>AI agents say "done" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.</b></p>
 
-Point dreamteam at a task or an approved plan. It assembles a crew of specialist agents and won't call anything done until an independent reviewer has checked the claims against real evidence. One loop, `produce → gate → fix → integrate`, runs across every domain. Only the crew changes.
+<p align="center"><i>Minimal by design, too: the least code that actually works, without dropping validation or security to get there.</i></p>
 
-```mermaid
-flowchart LR
-  T["task / plan"] --> C{"Caster<br/>resolves the crew"}
-  C --> P["produce<br/>dispatched specialist"]
-  P --> G{"gate<br/>review + Reality Checker"}
-  G -->|needs-work| F["fix"]
-  F --> G
-  G -->|pass| I["integrate"]
-  I --> R["report"]
+## Try it (one command)
+
+After [install](#install), point it at your repo in read-only mode:
+
+```
+/dreamteam --profile audit "find bugs in this repo"
 ```
 
-The three pieces, glossed on first use:
+It assembles a review crew, reproduces every finding against your real code, and prints a report. Nothing is written to your tree.
 
-- **conductor** — the loop you talk to. It dispatches work to specialist agents and reports each verdict. It never writes code itself.
-- **Caster** — the selector. It reads your task, picks the crew, and gives each role a cost-aware model tier. The crew prints before any work runs.
-- **Reality Checker** — the always-on reviewer. It re-runs the build and tests (or checks data against the claim for research) and rejects anything it can't verify.
+## What it does
 
-### Three pillars
+- Point it at a task or an approved plan, and it assembles a crew of specialists to do the work.
+- Nothing is marked done until a second, independent agent (the Reality Checker) re-runs the tests and matches every claim to real evidence.
+- One loop handles building, auditing, research, and QA. Only the crew changes.
 
-- **correct.** Every workstream passes a verification gate. The Reality Checker sits on every panel, matches claims against evidence (tests for code, data against claim for research), and throws out faked or over-claimed coverage. It also runs a mutation check: a green suite that still passes against a deliberately broken implementation gets rejected, not trusted.
-- **versatile.** One loop, a swappable crew. The same machinery handles builds, audits, research, and QA. Only the crew changes.
-- **minimal.** The least code that fully works. It gets there without cutting validation, security, or accessibility.
+## Why dreamteam?
 
-> dreamteam isn't the first verification-led orchestrator; loki-mode and the Edict pattern cover nearby ground. What's different here is the always-on honesty gate.
+Most agent tools hand a task to a model and trust whatever comes back. The model reports that the tests pass; sometimes they don't, or the passing test never actually ran the code under it. dreamteam is built for that gap. Everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken version gets rejected, not trusted.
 
-### Prerequisites
+It is also deliberately small. dreamteam is one skill you invoke per task, not a framework you build against or a platform you install and live in. The same loop handles builds, audits, research, and QA, and it runs on Claude Code, Codex, Gemini, and CodeWhale rather than a single runtime.
 
-- a supported CLI: Claude Code, Codex, Gemini, or CodeWhale
-- a git repo for build-type runs (each producer works in its own worktree)
-- paid model-API usage — a run spawns several agents, so see [Cost & scale](#cost--scale)
+The project people most often reach for as a comparison is ECC, and the honest answer is that it is a different category. ECC is an always-on operator layer with dozens of agents, a large skill library, persistent memory, and learning that runs in the background. It is broader and deeper than dreamteam, and it improves as it runs. dreamteam is narrow by choice: assemble a crew, run the gated loop, report, and get out of the way. The one thing it will not trade away is the honesty gate.[^prior-art]
+
+<details>
+<summary>How it compares to plain dispatch and to agent frameworks</summary>
+
+| | Dispatches work | Gates the result | No framework to build | Cross-CLI |
+|---|:---:|:---:|:---:|:---:|
+| Plain subagent dispatch / Task tool | ✓ | — | ✓ | — |
+| CrewAI · AutoGen · LangGraph | ✓ | partial (you wire it) | — | — |
+| **dreamteam** | **✓** | **✓ (mandatory + mutation-checked)** | **✓** | **✓** |
+
+</details>
 
 ## Install
+
+**Prerequisites**
+
+- a supported CLI: Claude Code, Codex, Gemini, or CodeWhale
+- a git repo for build-type runs, where work happens in isolated git worktrees
+- paid model-API usage, since a run spawns several agents (see [Cost & scale](#cost--scale))
 
 Three steps. These are the only install commands in this README; everything else links back here.
 
@@ -67,7 +77,7 @@ bash ./install.sh       # Linux / macOS
 pwsh ./install.ps1      # Windows
 ```
 
-**Step 3. Invoke it** with `/dreamteam`. See [Quickstart](#quickstart) and [Usage](#usage) for the invocation shapes.
+**Step 3. Invoke it** with `/dreamteam`. See [Quickstart](#quickstart) and [Mechanics / Reference](#mechanics--reference) for the invocation shapes.
 
 <details>
 <summary><b>Other CLIs &amp; the published-plugin install</b></summary>
@@ -107,9 +117,52 @@ With [Install](#install) done, point dreamteam at a task, a profile, or an appro
 
 > The first example uses the `superpowers` sub-skills and `find-skills`. If they aren't installed, the dependency check prints `[ ! ]` warnings and those paths won't fire. See [Install → Step 1](#install).
 
+> **Opt-in:** dreamteam runs multi-agent orchestration only when you invoke it.
+
+## How it works
+
+One loop, `produce → gate → fix → integrate`, runs across every domain. Only the crew changes.
+
+```mermaid
+flowchart LR
+  T["task / plan"] --> C{"Caster<br/>resolves the crew"}
+  C --> P["produce<br/>dispatched specialist"]
+  P --> G{"gate<br/>review + Reality Checker"}
+  G -->|needs-work| F["fix"]
+  F --> G
+  G -->|pass| I["integrate"]
+  I --> R["report"]
+```
+
+Three parts do the work, glossed on first use:
+
+- **conductor** — the loop you talk to. It dispatches work to specialist agents and reports each verdict. It never writes code itself.
+- **Caster** — the selector. It reads your task, picks the crew, and gives each role a cost-aware model tier. The crew prints before any work runs.
+- **Reality Checker** — the always-on reviewer. It re-runs the build and tests (or checks data against the claim for research) and rejects anything it can't verify.
+
+The three stages in detail:
+
+1. **Caster resolves the crew.** An explicit `--roster/--profile/--skills` wins. Failing that, a confident profile match takes the fast path. Failing that, a Caster agent reads the live agent registry and `find-skills` and returns a crew manifest. The crew prints before the run, with a one-line rationale per pick.
+2. **The loop runs per workstream** (`references/loop.md`): produce, gate, fix, integrate, report. Independent workstreams run concurrently, each file-mutating producer in its own git worktree. A mandatory per-workstream re-anchor keeps the conductor dispatching instead of coding inline.
+3. **The gate checks the work** (`references/gate.md`). A reviewer panel runs in parallel, split between static review and verification. The Reality Checker is always on the panel: it matches claims against evidence (tests for code, data against claim for research) and rejects faked or over-claimed coverage. A mutation check sharpens this further. A passing test has to go red on a broken implementation, and mocks can't stand in for the unit under test. Findings synthesize into `pass`, `fix-then-pass`, or `needs-work`, and the fix loop is capped.
+
+<details>
+<summary>Three design pillars</summary>
+
+- **correct.** Every workstream passes a verification gate. The Reality Checker sits on every panel, matches claims against evidence (tests for code, data against claim for research), and throws out faked or over-claimed coverage. It also runs a mutation check: a green suite that still passes against a deliberately broken implementation gets rejected, not trusted.
+- **versatile.** One loop, a swappable crew. The same machinery handles builds, audits, research, and QA. Only the crew changes.
+- **minimal.** The least code that fully works, without cutting validation or security to get there.
+
+</details>
+
+The deterministic edge cases live in [Mechanics / Reference](#mechanics--reference): the recommendation system, the `audit` profile, model-tier escalation, cross-platform resolution, learning and evolution, the raw-idea wrapper, and the full flag grammar.
+
 ## What a run looks like
 
 A run prints the crew manifest first. Then it drives each workstream through produce → gate → fix → integrate and reports every verdict with the evidence behind it. Here's an abbreviated transcript for `/dreamteam "add OAuth login to our web app"`:
+
+<details>
+<summary>Annotated run transcript</summary>
 
 ```text
 $ /dreamteam "add OAuth login to our web app"
@@ -156,23 +209,9 @@ Retro → learning persisted: "web+auth → add Security Engineer by default; as
         token tests." No skill-edit deltas proposed.
 ```
 
+</details>
+
 Every line is a real format from the skill: the manifest (`references/caster.md`), the per-workstream re-anchor and escalation lines (`references/loop.md`), and the `pass / fix-then-pass / needs-work` verdict with its evidence (`references/gate.md`).
-
-## Why dreamteam?
-
-dreamteam is a thin orchestration skill, not a framework you build against. Three differences stand out.
-
-**The honesty gate.** Every workstream passes a mandatory verification gate. An independent Reality Checker re-runs the evidence, and a green suite that still passes against a broken implementation gets rejected (the mutation and mock-integrity check). Plain subagent dispatch and the Task tool hand work out but don't gate it, so you get back whatever the agent claims.
-
-**No app to build.** CrewAI, AutoGen, and LangGraph are full multi-agent frameworks: Python libraries, graphs, and roles you wire up yourself. dreamteam is just a skill. The gate, the conductor-never-codes discipline, and the mutation checks ship as defaults.
-
-**Cross-CLI portable.** The same skill runs on Claude Code, Codex, Gemini, and CodeWhale. Tools, dispatch, and model tiers resolve per `references/platforms.md`, so it isn't tied to one runtime or SDK.
-
-| | Dispatches work | Gates the result | No framework to build | Cross-CLI |
-|---|:---:|:---:|:---:|:---:|
-| Plain subagent dispatch / Task tool | ✓ | — | ✓ | — |
-| CrewAI · AutoGen · LangGraph | ✓ | partial (you wire it) | — | — |
-| **dreamteam** | **✓** | **✓ (mandatory + mutation-checked)** | **✓** | **✓** |
 
 ## Cost & scale
 
@@ -186,46 +225,6 @@ Reviewers never drop below `capable`, so they're the largest steady cost. To eco
 - `--cost cheap` biases producers to the cheapest tier that fits; reviewers stay `capable`
 - `--autonomy confirm` gates spend by confirming the crew and each verdict before work proceeds
 - `--depth shallow|module` and a tighter task keep fan-out small
-
-## Usage
-
-The common shapes. Point it at a task, a profile, or an approved plan:
-
-```
-/dreamteam "add OAuth login to our web app"          # auto-pick the crew, run the gated loop
-/dreamteam --profile audit "find bugs in this repo"  # read-only bug-finder (nothing lands)
-/dreamteam docs/plans/my-plan.md                     # execute an already-approved plan
-/dreamteam --cost cheap --autonomy confirm "…"       # economize + gate every verdict
-```
-
-`--profile ai-research` splits a run into parallel workstreams in isolated worktrees:
-
-```
-/dreamteam --profile ai-research "salvage the leakage finding: expand ∥ polish"
-```
-
-**Execution mode.** Both modes run without tying up your session; `--execution` picks how:
-
-```
-/dreamteam --execution workflow "add OAuth login to our web app"   # orchestrate via the Workflow tool (Claude Code)
-/dreamteam --execution background "find bugs in this repo"          # multiple background subagents
-```
-
-The flag pre-sets the run's execution mode, so dreamteam skips the one-time "Background subagents or the Workflow tool?" prompt and uses your choice for the rest of the session. Background subagents are the default and run on every CLI. The Workflow tool is Claude-Code-only, and it fits a run with many independent workstreams. With no flag, dreamteam asks once per session and defaults to background. `--execution workflow` on Codex, Gemini, or CodeWhale is invalid, since none of them has a Workflow tool, so the run falls back to background subagents.
-
-The full flag grammar lives in [Mechanics / Reference](#mechanics--reference).
-
-**Opt-in:** dreamteam runs multi-agent orchestration only when you invoke it.
-
-## How it works
-
-The loop is the `produce → gate → fix → integrate` diagram at the top of this README. Here are the three stages in detail.
-
-1. **Caster resolves the crew.** An explicit `--roster/--profile/--skills` wins. Failing that, a confident profile match takes the fast path. Failing that, a Caster agent reads the live agent registry and `find-skills` and returns a crew manifest. The crew prints before the run, with a one-line rationale per pick.
-2. **The loop runs per workstream** (`references/loop.md`): produce, gate, fix, integrate, report. Independent workstreams run concurrently, each file-mutating producer in its own git worktree. A mandatory per-workstream re-anchor keeps the conductor dispatching instead of coding inline.
-3. **The gate checks the work** (`references/gate.md`). A reviewer panel runs in parallel, split between static review and verification. The Reality Checker is always on the panel: it matches claims against evidence (tests for code, data against claim for research) and rejects faked or over-claimed coverage. A mutation check sharpens this further. A passing test has to go red on a broken implementation, and mocks can't stand in for the unit under test. Findings synthesize into `pass`, `fix-then-pass`, or `needs-work`, and the fix loop is capped.
-
-The deterministic edge cases live in [Mechanics / Reference](#mechanics--reference): the recommendation system, the `audit` profile, model-tier escalation, cross-platform resolution, learning and evolution, the raw-idea wrapper, and the full flag grammar.
 
 ## Profiles (seed set)
 
@@ -249,6 +248,31 @@ The deterministic edge cases live in [Mechanics / Reference](#mechanics--referen
 ## Mechanics / Reference
 
 The core is the loop above. These are the flags and the deterministic edge cases behind it.
+
+### Invocation shapes
+
+Beyond the [Quickstart](#quickstart) examples:
+
+`--profile ai-research` splits a run into parallel workstreams in isolated worktrees:
+
+```
+/dreamteam --profile ai-research "salvage the leakage finding: expand ∥ polish"
+```
+
+`--execution` pre-sets how a run executes, so dreamteam skips the one-time prompt:
+
+```
+/dreamteam --execution workflow "add OAuth login to our web app"   # orchestrate via the Workflow tool (Claude Code)
+/dreamteam --execution background "find bugs in this repo"          # multiple background subagents
+```
+
+Both modes run without tying up your session. Background subagents are the default and run on every CLI. The Workflow tool is Claude-Code-only, and it fits a run with many independent workstreams. With no flag, dreamteam asks once per session and defaults to background. `--execution workflow` on Codex, Gemini, or CodeWhale is invalid, since none of them has a Workflow tool, so the run falls back to background subagents.
+
+Economize by combining the cost and autonomy flags:
+
+```
+/dreamteam --cost cheap --autonomy confirm "…"       # economize + gate every verdict
+```
 
 ### Full flag grammar
 
@@ -355,3 +379,5 @@ No. dreamteam's conductor dispatches every workstream to a background agent. Onc
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+[^prior-art]: dreamteam didn't invent verification-led orchestration. loki-mode and the Edict pattern cover nearby ground, and larger systems like ECC and metaswarm run their own verification loops and quality gates. The honest difference is the shape: a single opt-in skill rather than a standing platform, with one honesty gate that is mandatory by construction instead of optional wiring. metaswarm is the closest functional peer, since it also spans Claude, Gemini, and Codex and enforces gates of its own.

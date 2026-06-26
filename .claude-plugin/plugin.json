@@ -1,7 +1,7 @@
 {
   "name": "dreamteam",
   "version": "1.0.0",
-  "description": "Domain-agnostic meta-orchestration for Claude Code, Codex, Gemini & CodeWhale: a Caster assembles a cost-aware crew (per-role model tiers) and drives a task or approved plan to a verified result through a per-workstream produce -> gate -> fix -> integrate loop with independent review gates (Reality Checker always on the panel) and a post-run learning retro.",
+  "description": "AI agents say \"done\" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.",
   "author": { "name": "Adnan" },
   "homepage": "https://github.com/adnantaufique/dreamteam",
   "repository": "https://github.com/adnantaufique/dreamteam",

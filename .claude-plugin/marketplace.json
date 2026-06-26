@@ -2,14 +2,14 @@
   "name": "dreamteam-marketplace",
   "owner": { "name": "Adnan" },
   "metadata": {
-    "description": "Marketplace for the dreamteam meta-orchestration plugin.",
+    "description": "Marketplace for dreamteam, the verification-led multi-agent orchestration skill.",
     "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "dreamteam",
       "source": "./",
-      "description": "Domain-agnostic meta-orchestration for Claude Code, Codex, Gemini & CodeWhale: a Caster-selected, cost-aware crew drives a task or approved plan to a verified result via a per-workstream produce -> gate -> fix -> integrate loop with independent review gates and a post-run learning retro.",
+      "description": "AI agents say \"done\" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.",
       "version": "1.0.0",
       "license": "Apache-2.0",
       "author": { "name": "Adnan" },
