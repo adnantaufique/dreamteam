@@ -32,6 +32,7 @@ Each reviewer is dispatched at its manifest model tier (default capable; Reality
 - **Label the proof honestly.** Distinguish **unit-tested** vs **integration-tested** vs **manual-only** vs **unverified** — and never let a lower tier be reported as a higher one. For research: the **data must actually support the claim** (Reality Checker checks data ↔ claim), not merely be cited.
 - Violating the letter of this rule violates its spirit: a green checkmark with no evidence behind it is a failed gate.
 - This rule is `superpowers:verification-before-completion` applied to review — claims of done/passing require run evidence, not assumption.
+- **No glazing — be objective (distinct from the evidence rules above).** Every reviewer states the **unvarnished** assessment: no praise-padding, no hedging a real problem into a gentle suggestion, no rounding a fix-then-pass up to a pass to be agreeable. Severity is set by **impact**, not by tone — a Critical is reported as Critical even when the surrounding work is strong. A bare "looks good" / "LGTM" with no specific finding is **not** an assessment and **not** a passing review. This governs *how* a finding is voiced (objectivity); the bullets above govern *whether it has evidence* — both are required, and neither substitutes for the other.
 
 ## 4. Capped fix loop
 ```
@@ -47,3 +48,18 @@ if must-fixes still remain:
 Report the final verdict, what was fixed, and **the evidence behind the pass**.
 
 Reviewers do not auto-escalate tiers (already capable); producer re-dispatch escalation is handled in `loop.md`.
+
+## 5. Verification checklist (stack-neutral appendix)
+
+A concrete, stack-neutral sequence the **Reality Checker** / **Code Reviewer** MAY run as the verifying pass on a code workstream — it operationalizes §3's "evidence, not trust." Run in order:
+
+1. **build** — the project builds / compiles / installs cleanly.
+2. **types** — type-check / static analysis passes (typed stacks).
+3. **lint** — linter / formatter reports no new violations.
+4. **tests + coverage** — the suite runs green and exercises the changed code; coverage comes from a **real run** and the tests are **non-vacuous** (§3).
+5. **secret-scan** — no credentials / keys / tokens introduced in the diff.
+6. **diff-review** — every changed line traces to the task; no gratuitous scope (§1).
+
+→ **PASS** only when every *applicable* phase passes; any failing phase is a must-fix (§2). A phase that genuinely doesn't apply (e.g. `types` on an untyped script) is **labelled `skipped` with a reason — never silently faked green** (§3). This is a checklist the verifying reviewer may follow, **not** new gate machinery — the verdict still comes from §2.
+
+*Adapted from ECC verification-loop (MIT © 2026 Affaan Mustafa); attribution in `THIRD_PARTY_NOTICES.md`.*
