@@ -82,14 +82,14 @@ pwsh ./install.ps1      # Windows
 <details>
 <summary><b>Other CLIs &amp; the published-plugin install</b></summary>
 
-**Once published**, dreamteam installs as a Claude Code plugin marketplace:
+dreamteam also installs as a Claude Code plugin marketplace:
 
 ```
 /plugin marketplace add adnantaufique/dreamteam
 /plugin install dreamteam@dreamteam-marketplace
 ```
 
-*(The repo is currently private and not yet live, so the marketplace command doesn't work yet. Use the `install.sh` / `install.ps1` path above for now.)*
+*(Available now that the repo is public, though it hasn't been tested from a client yet. If the marketplace command doesn't resolve in your client, the `install.sh` / `install.ps1` path above always works.)*
 
 **Other CLIs.** The skill is CLI-agnostic. Tool names, dispatch, and model tiers resolve per `skills/dreamteam/references/platforms.md`:
 
