@@ -340,7 +340,8 @@ skills/dreamteam/
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S40 subagent validation scenarios + grounding dry-runs
+tests/scenarios.md    # S1–S40 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
+docs/VALIDATION.md    # the same scenarios as a one-line indexed list
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
 scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into other CLIs
@@ -348,9 +349,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents against the scenarios in `tests/scenarios.md` (S1–S40 plus two grounding dry-runs). The subagent's behavior is the test. Re-run after any edit, and install first.
-
-The scenarios: S1–S5 cover selection/gate/loop; S6–S7 model tiers + escalation; S8–S10 retro/learnings/evolve; S11 cross-CLI resolution; S12 conductor adherence; S13 native minimal-code + ponytail amplifier; S14–S16 the recommendation system (advisory recommend + opt-in installer); S17 the Karpathy fold-in; S18–S19 the `audit` profile (bugs / map + `--depth`); S20 mutation/mock-integrity; S21 devil's-advocate-on-unanimous; S22 the mobile-dev rename; S23 execution mode (always-background dispatch + one-time per-session background/Workflow choice); S24 session stickiness + tiny-edit carve-out; S25 the `--execution` flag pre-setting that session mode and skipping the one-time prompt. S26 the bundled-agent load + third-party attribution (21 vendored agents + `mle-workflow`; pristine bodies, NOTICE / THIRD_PARTY_NOTICES, root LICENSE unchanged); S27 the `ml-dev` profile; S28 the `debug` profile (reproduce-first, spine carve-out, vacuous-green rejected); S29 the `ux-designer` profile (a11y non-waivable; redesign = deep-research-agent); S30 the `tutor` profile (explanation↔source, source wins); S31 `karpathy-guidelines` composed onto code producers; S32 the no-glazing / objective standard; S33 the verification-loop 6-phase gate appendix; S34 the `graphify --graph on|off|auto` AST graph (never a verdict); S35 the graphify-backed `audit`; S36 the six component-upstream recommendations; S37 the `project_key` + numeric-confidence learnings schema; S38 the opt-in dependency installer; S39 the marketplace install path; S40 the OpenCode platform (native `skill`-tool discovery + auto-read from `~/.claude/skills`; provider-agnostic tiers; background execution).
+The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 40 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, and the bundled-agent build. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
 
 ## FAQ / Troubleshooting
 
