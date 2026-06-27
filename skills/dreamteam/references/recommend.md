@@ -43,6 +43,7 @@ These are **plugin/git/npm/pip** upstreams, so they stay on the **recommend-and-
 - `type-design-analyzer` — type-model soundness, making illegal states unrepresentable
 - `comment-analyzer` — comments that no longer match the code
 - `code-simplifier` / `refactor-cleaner` — over-engineering cleanup (overlaps `ponytail` + the gate's native over-engineering flag; add only when the host already has it)
+- `Git Workflow Master` — source-control / commit-message reviewer: for repos with **strict commit conventions**, vet the integrate commit message against the diff (conforms to `loop.md` §"Commit-message standard"). **Optional + recommend-only — never a mandatory per-commit reviewer**: it advises the conductor's integrate self-check, adds no gate step, and absent it the self-check still covers the message.
 
 **ECC recommend-targets (awareness only — recommend from the ECC source above, add no machinery).** Three ECC capabilities worth surfacing when a run hits the matching need; dreamteam does not adopt their machinery:
 - `search-first` — reuse-before-build search (dreamteam's native minimal-code + `ponytail` already cover this; recommend ECC's if the user wants the dedicated agent)
