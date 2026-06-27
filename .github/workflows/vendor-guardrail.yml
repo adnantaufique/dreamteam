@@ -1,0 +1,24 @@
+name: vendor-guardrail
+
+# CI license-gate + vendor-drift check (build-plan PHASE J / P2-20).
+# Runs refresh-vendor.sh on every PR: re-fetches each vendored file at its
+# THIRD_PARTY_NOTICES-pinned commit, fails the check on any pristine-body drift,
+# and fails if a source LICENSE is missing, no longer MIT, or has no notices entry.
+
+on:
+  pull_request:
+    paths:
+      - 'vendor/**'
+      - 'skills/mle-workflow/**'
+      - 'THIRD_PARTY_NOTICES.md'
+      - 'scripts/refresh-vendor.sh'
+      - '.github/workflows/vendor-guardrail.yml'
+  workflow_dispatch:
+
+jobs:
+  vendor-guardrail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vendor drift + license gate
+        run: bash scripts/refresh-vendor.sh
