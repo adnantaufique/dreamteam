@@ -44,6 +44,14 @@ The rubric, profiles, and escalation name the **abstract** tiers; resolve them h
 - **Codex** → an `AGENTS.md` entry + `scripts/sync-to-codex` mirrors `skill/` into the Codex skills layout.
 - **CodeWhale** → `scripts/sync-to-codewhale` mirrors `skill/` into `~/.codewhale/skills/dreamteam/` (loaded via the `/skills` command); the global-instructions fallback is `~/.agents/AGENTS.md`.
 
+## Graph tool (`graphify`) — engine-level, not per-OS
+The optional AST code-graph (`--graph on|off|auto`; `loop.md` §Graph, `SKILL.md` Composes) integrates at the **engine level via portable Python**, **not** through any per-CLI / per-OS skill body — so `--graph` resolves **identically on Claude Code, Codex, Gemini, and CodeWhale**, with no tool-name or dispatch mapping. graphify exposes three cross-platform integration surfaces:
+- **CLI** — `graphify <repo>` builds, `graphify --update` refreshes (code-only = AST = free); the conductor shells out via each CLI's Bash / `run_shell_command` equivalent (see the Tool-name map).
+- **MCP server** — `graphify --mcp` (`python -m graphify.serve graphify-out/graph.json`) exposes `query_graph` / `get_neighbors` / `shortest_path` / … so any MCP-capable producer or reviewer can query the live graph; register it in the host CLI's MCP settings.
+- **git-hook** — `graphify hook install` adds a post-commit hook that re-runs AST extraction on changed files. Install it on the **main working tree only — never in producer worktrees** (`superpowers:using-git-worktrees`): a per-worktree hook would rebuild the graph on every isolated producer commit. (G1 in `loop.md` rides `integrate` on the main tree.)
+
+Install is **uv/pipx, recommend-only** (`recommend.md`); the graph is **infra — never a gate, never a verdict** (`loop.md` §Graph). Absent / `--graph off` / oversized repo → skip silently, the run continues.
+
 Environment / sandbox + worktree handling is inherited from the composed superpowers skills (`using-git-worktrees`, `finishing-a-development-branch`) — dreamteam must use those, not a hand-rolled `git checkout -b`.
 
 `--platform` defaults to **auto**: detect the host by its config-dir marker — `~/.claude` → claude, `~/.gemini` → gemini, `~/.codewhale` → codewhale, `~/.agents` (or an `AGENTS.md`) → codex; `--platform` overrides the guess.

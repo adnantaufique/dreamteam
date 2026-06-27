@@ -23,6 +23,12 @@ When a role/capability has no good *installed* skill, the Caster may discover an
 - **skills.sh wins** for installable skills.
 - **The CSV wins** as the only source for non-skill resources, and as a curation cross-check.
 
+## graphify — recommend-only external tool (the AST code-graph)
+`graphify` (safishamsi, **MIT**) is an external **AST code-graph** CLI/MCP tool dreamteam uses as **optional conductor navigation infra** (`--graph on|off|auto`; `SKILL.md` Composes, `loop.md` §Graph). It is **RECOMMEND-only — never vendored, never auto-installed** — and is **not** discovered via `find-skills` or the awesome-claude-code CSV (it is a Python tool, not a Claude skill), so it is registered here directly.
+- **When to recommend** (emit a `recommendations[]` entry): a **codebase-understanding** task, or the **`audit` profile** (especially `--mode map`), or dev producers / Code Reviewer (`caster.md`) — on a repo where `graphify` isn't installed and `--graph` isn't `off`.
+- **Install — uv/pipx, no auto-confirm** (the human runs it): `uv tool install graphifyy && graphify install` (fallback `pipx install graphifyy && graphify install`). The package is **`graphifyy`**; the command is **`graphify`**. Portable Python → the **same command on every `--platform`** (`platforms.md`); no Claude-only form.
+- **Degrade gracefully:** absent / `--graph off` / oversized repo → the run proceeds without the graph (agents read the tree directly). The graph is **infra, never a gate, and never decides a verdict** (`loop.md` §Graph).
+
 ## `recommendations[]` schema
 Per-run **ephemeral** — advisory, **NOT persisted to `learnings.md`**. De-dup by candidate within a run.
 ```

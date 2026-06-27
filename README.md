@@ -239,11 +239,15 @@ Reviewers never drop below `capable`, so they're the largest steady cost. To eco
 | **devops** | DevOps Automator | Reality Checker, Security Engineer | sequential |
 | **qa** | quality-engineer + Test Results Analyzer | Reality Checker | sequential |
 | **audit** *(read-only)* | dimension specialists as producers — *bugs:* Code Reviewer · Security Engineer · Performance Benchmarker · root-cause-analyst · *map:* Explore · Software Architect + synthesizer | Reality Checker (+ dimension specialists as verifiers) | **parallel** |
+| **ml-dev** | AI Engineer / python-expert · build-error-resolver (training/CUDA build-fix) *(ML development, distinct from ai-research)* | methodology reviewer, Reality Checker (+ Security Engineer if infra/data-sensitive) | sequential |
+| **debug** | root-cause-analyst (investigate) · host code producer (fix) *(reproduce-first; skips plan-writing, but lands the fix)* | Reality Checker (reproduce-then-resolve: RED before / GREEN after + a regression test), Code Reviewer | sequential |
+| **ux-designer** | UI Designer (+ ui-ux-pro-max) · deep-research-agent (redesign) · Frontend Developer (if code emitted) *(design-led; a11y non-waivable)* | a UX/design reviewer, an accessibility reviewer, Reality Checker (re-derives a11y evidence) (+ Code Reviewer if code emitted) | sequential |
+| **tutor** | deep-research-agent (understand) · Technical Writer (explain) *(understand anything, then explain it simply)* | Reality Checker (explanation↔source; source wins), a clarity reviewer | sequential |
 | **generic** | general-purpose | Code Reviewer, Reality Checker | sequential |
 
 </details>
 
-`--profile android` still works as a back-compat alias for `mobile-dev`. The `audit` profile is read-only: the report is the artifact, and nothing lands in the audited tree (see [Mechanics / Reference](#mechanics--reference)). Each role carries a default model tier. For anything richer or cross-domain, the Caster agent reasons over the live registry, so a security- or architecture-sensitive producer can be cast above its profile default when it sits on the critical path. The OAuth backend in the transcript above is one example, bumped from `standard` to `capable`. Rosters are only defaults; override them with `--roster`.
+`--profile android` still works as a back-compat alias for `mobile-dev`. The `audit` profile is read-only: the report is the artifact, and nothing lands in the audited tree (see [Mechanics / Reference](#mechanics--reference)). When `graphify` is installed, the `audit` profile is also graph-backed: the Caster builds an AST code-graph once at fan-out as navigation infra. The graph never decides a verdict, so the gate still reproduces every finding against live code. Each role carries a default model tier. For anything richer or cross-domain, the Caster agent reasons over the live registry, so a security- or architecture-sensitive producer can be cast above its profile default when it sits on the critical path. The OAuth backend in the transcript above is one example, bumped from `standard` to `capable`. Rosters are only defaults; override them with `--roster`.
 
 ## Mechanics / Reference
 
@@ -278,8 +282,8 @@ Economize by combining the cost and autonomy flags:
 
 ```
 /dreamteam <task | plan-ref>
-      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit]
-      [--depth shallow|module|exhaustive] [--mode bugs|map]
+      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit|ml-dev|debug|ux-designer|tutor]
+      [--depth shallow|module|exhaustive] [--mode bugs|map] [--graph on|off|auto]
       [--roster planner=…,producers=<role>:<agent>[@<tier>][+<skill>];…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step] [--execution background|workflow]
       [--models …] [--cost cheap|balanced|quality] [--platform claude|codex|gemini|codewhale]
