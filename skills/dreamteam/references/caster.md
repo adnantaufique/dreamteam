@@ -5,7 +5,7 @@ Resolve the dreamteam for a task and **print a dreamteam manifest** (+ one line 
 Skill recommendations + the opt-in installer role: `references/recommend.md` (the Caster only recommends — **discovery in, advice out**).
 
 ## Precedence (stop at the first that applies)
-0. **Consult learnings** — read `references/learnings.md` for the matched profile/task_kind; treat any entry as an overridable default (adjust the roster/tiers/gate emphasis accordingly), never a hard rule. This informs — never overrides — the steps below.
+0. **Consult learnings** — read `references/learnings.md` for the matched profile/task_kind, **filtered by `project_key`**: consult **GLOBAL entries (`project_key` = `global`, or a blank/legacy cell) always + PROJECT entries whose `project_key` matches the current repo's git-remote hash** — a learning from another project never leaks in. Treat any matched entry as an overridable default **weighted by its numeric `confidence` (0.3–0.9)** (adjust the roster/tiers/gate emphasis accordingly), never a hard rule. This informs — never overrides — the steps below.
 1. **Explicit cast** — any of `--roster` / `--profile` / `--skills` given → build the manifest from them, skip the Caster agent.
    - `--profile X` → that row of `references/profiles.md`. Back-compat: `--profile android` resolves to `mobile-dev` (alias), and the learnings lookup key normalizes `android → mobile-dev` so persisted `references/learnings.md` rows still match after the rename.
    - `--roster planner=<agent|skill>[@<tier>],producers=<role>:<agent>[@<tier>][+<skill>…][;<role>:<agent>…],reviewers=<agent>[@<tier>][,<agent>…]` → parse into the manifest as given (Reality Checker is still force-added to `reviewers` if the user omitted it).

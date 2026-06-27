@@ -17,12 +17,17 @@ The feedback reviewer emits a **learnings record** (schema below), which is appe
 
 ## Learnings schema
 ```
-{ run_id, profile, task_kind,
+{ run_id, project_key, profile, task_kind,
   worked: [ <evidence-backed observation> ],
   change: [ { target: profile|caster|tier|gate, delta: <concrete>, evidence: <why> } ],
-  confidence: low|med|high }
+  confidence: 0.3–0.9 }
 ```
-(`task_kind` is a short free-text kind tag, e.g. "leak-prone build" or "load-test"; `profile` is the primary match key and `task_kind` is matched loosely alongside it.)
+- **`project_key`** — a stable hash of the repo's **git remote (origin) URL** (the same project matches across clones); it **scopes** the learning to the project it came from, so a learning from project A no longer leaks into project B. A repo with **no remote** (or a deliberately cross-project insight) is stamped **`global`** (consulted on every run). See the project-vs-global split + the optional project→global promotion in `references/learnings.md`.
+- **`profile`** stays the **primary match key**; **`task_kind`** (a short free-text kind tag, e.g. "leak-prone build" or "load-test") is matched **loosely alongside it** (unchanged).
+- **`confidence`** is now **numeric `0.3–0.9`** (replacing `low|med|high`) so corroboration moves it in small steps:
+  - **Start** at **0.3–0.5** for a single-run observation (more direct run evidence → higher in the band).
+  - **Increase → up to 0.9:** each **later run that corroborates** the same learning (same `profile`/`task_kind`, consistent evidence), or a change that **measurably** improved the outcome (gate cleared faster · fewer fix-iterations · fewer first-try misses). **Cap 0.9** — never 1.0, since a learning is an **overridable advisory default**, never a hard rule.
+  - **Decrease → down to 0.3:** a **later run that contradicts** it (the default produced a worse roster/tier/gate outcome, or a human override beat it) or staleness. **Floor 0.3** — **below 0.3 the entry is dropped, not stored** (ties to the evidence rule below: no supporting run evidence → not recorded).
 
 ## Human gate + honesty
 - Any change whose `target` would **edit the skill itself** (profiles.md tiers, caster heuristics, gate policy) is **PROPOSED, not auto-applied** — the conductor surfaces the deltas; the human approves. Auto-persisted entries in the store (`references/learnings.md`) are **advisory defaults** the Caster can override, never hard rules.

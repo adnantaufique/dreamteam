@@ -23,6 +23,32 @@ When a role/capability has no good *installed* skill, the Caster may discover an
 - **skills.sh wins** for installable skills.
 - **The CSV wins** as the only source for non-skill resources, and as a curation cross-check.
 
+### Component upstreams (recommend to refresh or extend — never auto-installed)
+The provenance of dreamteam's bundled and depended-on components. When a profile needs a component beyond the vendored subset — an extra agent, skill, or command — the Caster **recommends** the matching source command and the human runs it. All commands carry **no `-y`/auto-confirm**. The `/plugin …` form is **Claude-only**: under a non-Claude `--platform`, use the git/npx/pip fallback and suppress the Claude-only form (same rule as the awesome-claude-code source above).
+
+| Source | SPDX | Role here | Install command (no auto-confirm) | Non-Claude fallback |
+|---|---|---|---|---|
+| agency-agents (msitarzewski) | MIT | vendored subset — recommend to pull more named agents | `git clone https://github.com/msitarzewski/agency-agents && agency-agents/scripts/install.sh --tool claude-code` | same clone; pass the matching `--tool` (e.g. `codex`/`gemini`) |
+| ECC (affaan-m) | MIT | vendored subset — recommend extra reviewers/resolvers/skills/commands | `/plugin marketplace add https://github.com/affaan-m/ECC` then `/plugin install ecc@ecc` | `npx ecc-install --profile minimal --target <platform>` |
+| SuperClaude (SuperClaude-Org) | MIT | vendored subset — recommend the broader `sc:*` agent/command suite | `pipx install SuperClaude && SuperClaude install` | Gemini: `pipx install SuperGemini && SuperGemini install` · Codex: `pipx install SuperCodex && SuperCodex install` |
+| superpowers (obra) | MIT | depended-on — recommend to install the 5 sub-skills + `systematic-debugging` | `/plugin marketplace add obra/superpowers-marketplace` then `/plugin install superpowers@superpowers-marketplace` | per superpowers docs (manual skill sync) |
+| ui-ux-pro-max (nextlevelbuilder) | MIT | depended-on — recommend to install for the `ux-designer` + design roles | `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill` then `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill` | `npm install -g ui-ux-pro-max-cli && uipro init --ai claude` |
+
+The sixth source, **graphify** (safishamsi, MIT), is registered in its own section below — recommend-only, never vendored.
+
+These are **plugin/git/npm/pip** upstreams, so they stay on the **recommend-and-print** path: the Caster names the source and prints the command, the human runs it. They are **not** eligible for the skills-only, one-pinned `npx skills add` auto-`setup` flow below (that path installs skills.sh skills only). Discovery in, advice out — the Caster never installs.
+
+**Optional reviewer lenses (host-present only — name, do not vendor).** If one of these is already installed on the host, the Caster *may* add it as an extra reviewer for its gate dimension. None is bundled or auto-installed; absent, the gate runs without it (Reality Checker + the profile's named reviewers still cover the verdict):
+- `silent-failure-hunter` — swallowed errors, empty catches, ignored return values
+- `type-design-analyzer` — type-model soundness, making illegal states unrepresentable
+- `comment-analyzer` — comments that no longer match the code
+- `code-simplifier` / `refactor-cleaner` — over-engineering cleanup (overlaps `ponytail` + the gate's native over-engineering flag; add only when the host already has it)
+
+**ECC recommend-targets (awareness only — recommend from the ECC source above, add no machinery).** Three ECC capabilities worth surfacing when a run hits the matching need; dreamteam does not adopt their machinery:
+- `search-first` — reuse-before-build search (dreamteam's native minimal-code + `ponytail` already cover this; recommend ECC's if the user wants the dedicated agent)
+- `skill-stocktake` — audits installed-skill quality (a maintainer/curation tool, not a runtime role)
+- `context-budget` — ECC's token/context-budget discipline for long runs
+
 ## graphify — recommend-only external tool (the AST code-graph)
 `graphify` (safishamsi, **MIT**) is an external **AST code-graph** CLI/MCP tool dreamteam uses as **optional conductor navigation infra** (`--graph on|off|auto`; `SKILL.md` Composes, `loop.md` §Graph). It is **RECOMMEND-only — never vendored, never auto-installed** — and is **not** discovered via `find-skills` or the awesome-claude-code CSV (it is a Python tool, not a Claude skill), so it is registered here directly.
 - **When to recommend** (emit a `recommendations[]` entry): a **codebase-understanding** task, or the **`audit` profile** (especially `--mode map`), or dev producers / Code Reviewer (`caster.md`) — on a repo where `graphify` isn't installed and `--graph` isn't `off`.

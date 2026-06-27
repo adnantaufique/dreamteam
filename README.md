@@ -317,6 +317,8 @@ Everything is resolved or substituted at runtime. The installers report what's m
 - **ai-research skills** (optional). `creative-thinking-for-research`, `brainstorming-research-ideas`, `literature-review`, and `ml-paper-writing`, used by the ai-research profile. Each installs the same `npx skills add …` way.
 - **agents.** Cast per profile. Reality Checker and Code Reviewer are used widely. The `audit` profile adds `root-cause-analyst`, `Explore`, `Software Architect`, `Performance Benchmarker`, and `Security Engineer`. `general-purpose` is built-in.
 - **ponytail** (optional). An external enforcer of dreamteam's native minimal-code principle; the gate checks for over-engineering with or without it. It's composed onto code-producing producers when installed.
+- **graphify** (optional). An external AST code-graph tool the Caster uses as navigation infra (`--graph on|off|auto`), mostly for the `audit` profile and codebase-heavy runs. When it's absent, agents read the tree directly, and it never decides a verdict. It's recommend-only and never bundled; `references/recommend.md` carries the install command and the full behavior ([github.com/safishamsi/graphify](https://github.com/safishamsi/graphify)).
+- **Recommendation sources.** When a profile needs an agent, skill, or command beyond the bundled and required set, the Caster recommends it from its upstream source and prints the command for you to run (agency-agents, ECC, SuperClaude, superpowers, ui-ux-pro-max, and graphify). It never installs anything itself. See `references/recommend.md`.
 
 ## Layout
 
