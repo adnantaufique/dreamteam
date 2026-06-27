@@ -13,7 +13,7 @@ For **builds**, dreamteam is spec-driven by default — the wrapper turns a raw 
 
 **Standing principles** (native to dreamteam — they hold on every run): (1) **honest** — the gate backs every claim with evidence and the Reality Checker is always on the panel; (2) **minimal-code** — producers ship the *simplest solution that fully works* (no over-engineering or speculative generality), kept complete and correct, and **never** by cutting validation, security, or accessibility; for code producers this is composed-enforced by `ponytail` + `karpathy-guidelines` when installed (see Composes); (3) **objective** — every assessment states the unvarnished verdict: no sugar-coating, no over-praise, no softening a failure toward a pass. This governs the *tone* of an assessment (don't glaze), and is distinct from (1)'s *evidence* requirement (don't claim without proof).
 
-Runs on Claude Code, Codex CLI, Gemini CLI, and CodeWhale — tool names, subagent dispatch, and model tiers resolve per `references/platforms.md` (`--platform` defaults to auto-detect).
+Runs on Claude Code, Codex CLI, Gemini CLI, CodeWhale, and OpenCode — tool names, subagent dispatch, and model tiers resolve per `references/platforms.md` (`--platform` defaults to auto-detect).
 
 **Opt-in:** this runs multi-agent orchestration only when explicitly invoked (`/dreamteam …`).
 
@@ -67,7 +67,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
       [--roster planner=…,producers=…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step]
       [--models planner=…,producers=<role>:<tier>;…,reviewers=<tier>] [--cost cheap|balanced|quality]
-      [--platform claude|codex|gemini|codewhale] [--execution background|workflow] [--repo <path>] [--branch <name>] [--parallel]
+      [--platform claude|codex|gemini|codewhale|opencode] [--execution background|workflow] [--repo <path>] [--branch <name>] [--parallel]
       [--retro on|off] [--learnings <path>] [--evolve [generations=N]]
 ```
 

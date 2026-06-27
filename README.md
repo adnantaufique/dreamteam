@@ -5,7 +5,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-3fb950" alt="version">
   <img src="https://img.shields.io/badge/license-Apache_2.0-blue" alt="license">
-  <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale-30363d" alt="platforms">
+  <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale_·_OpenCode-30363d" alt="platforms">
   <img src="https://img.shields.io/badge/Claude_Code-plugin-1f6feb" alt="Claude Code plugin">
 </p>
 
@@ -33,7 +33,7 @@ It assembles a review crew, reproduces every finding against your real code, and
 
 Most agent tools hand a task to a model and trust whatever comes back. The model reports that the tests pass; sometimes they don't, or the passing test never actually ran the code under it. dreamteam is built for that gap. Everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken version gets rejected, not trusted.
 
-It is also deliberately small. dreamteam is one skill you invoke per task, not a framework you build against or a platform you install and live in. The same loop handles builds, audits, research, and QA, and it runs on Claude Code, Codex, Gemini, and CodeWhale rather than a single runtime.
+It is also deliberately small. dreamteam is one skill you invoke per task, not a framework you build against or a platform you install and live in. The same loop handles builds, audits, research, and QA, and it runs on Claude Code, Codex, Gemini, CodeWhale, and OpenCode rather than a single runtime.
 
 The project people most often reach for as a comparison is ECC, and the honest answer is that it is a different category. ECC is an always-on operator layer with dozens of agents, a large skill library, persistent memory, and learning that runs in the background. It is broader and deeper than dreamteam, and it improves as it runs. dreamteam is narrow by choice: assemble a crew, run the gated loop, report, and get out of the way. The one thing it will not trade away is the honesty gate.[^prior-art]
 
@@ -52,7 +52,7 @@ The project people most often reach for as a comparison is ECC, and the honest a
 
 **Prerequisites**
 
-- a supported CLI: Claude Code, Codex, Gemini, or CodeWhale
+- a supported CLI: Claude Code, Codex, Gemini, CodeWhale, or OpenCode
 - a git repo for build-type runs, where work happens in isolated git worktrees
 - paid model-API usage, since a run spawns several agents (see [Cost & scale](#cost--scale))
 
@@ -98,8 +98,11 @@ dreamteam also installs as a Claude Code plugin marketplace:
 | Codex | `scripts/sync-to-codex.sh` | `~/.agents/skills/dreamteam/` (+ `AGENTS.md` pointer) |
 | Gemini | `scripts/sync-to-gemini.sh` (+ `gemini-extension.json`) | `~/.gemini/agents/dreamteam/` |
 | CodeWhale | `scripts/sync-to-codewhale.sh` | `~/.codewhale/skills/dreamteam/` (load via `/skills`) |
+| OpenCode | `scripts/sync-to-opencode.sh` | `~/.config/opencode/skills/dreamteam/` (native `skill` tool; also auto-read from `~/.claude/skills/`) |
 
 (`.ps1` variants exist for each on Windows.)
+
+OpenCode is a special case: it natively reads `~/.claude/skills`, so the [Step 2](#install) `install.sh` / `install.ps1` already makes dreamteam available there with no sync step. The `sync-to-opencode` script is only for OpenCode-only setups that haven't run the Claude installer.
 
 </details>
 
@@ -269,7 +272,7 @@ Beyond the [Quickstart](#quickstart) examples:
 /dreamteam --execution background "find bugs in this repo"          # multiple background subagents
 ```
 
-Both modes run without tying up your session. Background subagents are the default and run on every CLI. The Workflow tool is Claude-Code-only, and it fits a run with many independent workstreams. With no flag, dreamteam asks once per session and defaults to background. `--execution workflow` on Codex, Gemini, or CodeWhale is invalid, since none of them has a Workflow tool, so the run falls back to background subagents.
+Both modes run without tying up your session. Background subagents are the default and run on every CLI. The Workflow tool is Claude-Code-only, and it fits a run with many independent workstreams. With no flag, dreamteam asks once per session and defaults to background. `--execution workflow` on Codex, Gemini, CodeWhale, or OpenCode is invalid, since none of them has a Workflow tool, so the run falls back to background subagents.
 
 Economize by combining the cost and autonomy flags:
 
@@ -285,7 +288,7 @@ Economize by combining the cost and autonomy flags:
       [--depth shallow|module|exhaustive] [--mode bugs|map] [--graph on|off|auto]
       [--roster planner=…,producers=<role>:<agent>[@<tier>][+<skill>];…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step] [--execution background|workflow]
-      [--models …] [--cost cheap|balanced|quality] [--platform claude|codex|gemini|codewhale]
+      [--models …] [--cost cheap|balanced|quality] [--platform claude|codex|gemini|codewhale|opencode]
       [--retro on|off] [--learnings <path>] [--evolve [generations=N]]
       [--repo <path>] [--branch <name>] [--parallel]
 ```
@@ -293,7 +296,7 @@ Economize by combining the cost and autonomy flags:
 ### Selection and cost
 
 - **Cost-aware model tiers.** The Caster gives each role the cheapest tier that fits. The abstract scale is `cheap → standard → capable → max`, resolved to a concrete model per platform (`references/platforms.md`). Reviewers stay `capable`, and the loop escalates a tier on a gate failure or a BLOCKED producer. Tune it with `--cost` and `--models`.
-- **Cross-platform.** Runs on Claude Code, Codex, Gemini, and CodeWhale. `--platform` auto-detects the host.
+- **Cross-platform.** Runs on Claude Code, Codex, Gemini, CodeWhale, and OpenCode. `--platform` auto-detects the host.
 - **Recommendation system** (`references/recommend.md`). When a best-fit skill isn't installed, the Caster surfaces an advisory recommendation from skills.sh (via `find-skills`) plus the awesome-claude-code `THE_RESOURCES_TABLE.csv`. Discovery in, advice out. It recommends but doesn't install. An opt-in, human-gated `setup` role can install one approved, pinned candidate, and the gate checks the installed identity and that the command carried no auto-confirm flag.
 
 ### Audit and review
@@ -331,23 +334,23 @@ skills/dreamteam/
     gate.md           # reviewer panel + synthesis + honesty rule + capped fix loop
     loop.md           # per-workstream produce→gate→fix→integrate + escalation + re-anchor + retro
     wrapper.md        # full-lifecycle entry (brainstorming → writing-plans → loop)
-    platforms.md      # per-CLI tool / dispatch / model-tier map (Claude · Codex · Gemini · CodeWhale)
+    platforms.md      # per-CLI tool / dispatch / model-tier map (Claude · Codex · Gemini · CodeWhale · OpenCode)
     audit.md          # the audit profile — read-only bug-finding / project-map sweeps
     recommend.md      # advisory skill/resource recommendations (Caster recommends, never installs)
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S39 subagent validation scenarios + grounding dry-runs
+tests/scenarios.md    # S1–S40 subagent validation scenarios + grounding dry-runs
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
-scripts/sync-to-{codex,gemini,codewhale}.*   # mirror the skill into other CLIs
+scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into other CLIs
 ```
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents against the scenarios in `tests/scenarios.md` (S1–S39 plus two grounding dry-runs). The subagent's behavior is the test. Re-run after any edit, and install first.
+The skill is validated by dispatching fresh subagents against the scenarios in `tests/scenarios.md` (S1–S40 plus two grounding dry-runs). The subagent's behavior is the test. Re-run after any edit, and install first.
 
-The scenarios: S1–S5 cover selection/gate/loop; S6–S7 model tiers + escalation; S8–S10 retro/learnings/evolve; S11 cross-CLI resolution; S12 conductor adherence; S13 native minimal-code + ponytail amplifier; S14–S16 the recommendation system (advisory recommend + opt-in installer); S17 the Karpathy fold-in; S18–S19 the `audit` profile (bugs / map + `--depth`); S20 mutation/mock-integrity; S21 devil's-advocate-on-unanimous; S22 the mobile-dev rename; S23 execution mode (always-background dispatch + one-time per-session background/Workflow choice); S24 session stickiness + tiny-edit carve-out; S25 the `--execution` flag pre-setting that session mode and skipping the one-time prompt. S26 the bundled-agent load + third-party attribution (21 vendored agents + `mle-workflow`; pristine bodies, NOTICE / THIRD_PARTY_NOTICES, root LICENSE unchanged); S27 the `ml-dev` profile; S28 the `debug` profile (reproduce-first, spine carve-out, vacuous-green rejected); S29 the `ux-designer` profile (a11y non-waivable; redesign = deep-research-agent); S30 the `tutor` profile (explanation↔source, source wins); S31 `karpathy-guidelines` composed onto code producers; S32 the no-glazing / objective standard; S33 the verification-loop 6-phase gate appendix; S34 the `graphify --graph on|off|auto` AST graph (never a verdict); S35 the graphify-backed `audit`; S36 the six component-upstream recommendations; S37 the `project_key` + numeric-confidence learnings schema; S38 the opt-in dependency installer; S39 the marketplace install path.
+The scenarios: S1–S5 cover selection/gate/loop; S6–S7 model tiers + escalation; S8–S10 retro/learnings/evolve; S11 cross-CLI resolution; S12 conductor adherence; S13 native minimal-code + ponytail amplifier; S14–S16 the recommendation system (advisory recommend + opt-in installer); S17 the Karpathy fold-in; S18–S19 the `audit` profile (bugs / map + `--depth`); S20 mutation/mock-integrity; S21 devil's-advocate-on-unanimous; S22 the mobile-dev rename; S23 execution mode (always-background dispatch + one-time per-session background/Workflow choice); S24 session stickiness + tiny-edit carve-out; S25 the `--execution` flag pre-setting that session mode and skipping the one-time prompt. S26 the bundled-agent load + third-party attribution (21 vendored agents + `mle-workflow`; pristine bodies, NOTICE / THIRD_PARTY_NOTICES, root LICENSE unchanged); S27 the `ml-dev` profile; S28 the `debug` profile (reproduce-first, spine carve-out, vacuous-green rejected); S29 the `ux-designer` profile (a11y non-waivable; redesign = deep-research-agent); S30 the `tutor` profile (explanation↔source, source wins); S31 `karpathy-guidelines` composed onto code producers; S32 the no-glazing / objective standard; S33 the verification-loop 6-phase gate appendix; S34 the `graphify --graph on|off|auto` AST graph (never a verdict); S35 the graphify-backed `audit`; S36 the six component-upstream recommendations; S37 the `project_key` + numeric-confidence learnings schema; S38 the opt-in dependency installer; S39 the marketplace install path; S40 the OpenCode platform (native `skill`-tool discovery + auto-read from `~/.claude/skills`; provider-agnostic tiers; background execution).
 
 ## FAQ / Troubleshooting
 
