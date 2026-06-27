@@ -1,6 +1,6 @@
 # Dreamteam — Recommend (the Caster's skill discovery, skills-only)
 
-When a role/capability has no good *installed* skill, the Caster may discover and **recommend** one. This file defines the two sources, the trust ranking, the ephemeral `recommendations[]` schema, and the opt-in `setup` installer.
+When a role/capability has no good *installed* skill, the Caster may discover and **recommend** one. This file defines the discovery sources (`find-skills` + the awesome-claude-code CSV), the six component upstreams it recommends from, the trust ranking, the ephemeral `recommendations[]` schema, and the opt-in `setup` installer.
 
 > **INVARIANT:** The Caster only selects + recommends — **discovery in, advice out**. It never installs, persists, or executes. Installation is a dispatched, gated producer (the `setup` role), never a Caster/conductor action.
 

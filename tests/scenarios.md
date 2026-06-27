@@ -110,7 +110,7 @@ Install first so installed-skill scenarios see the latest copy: `pwsh ./install.
 - **Input:** a dreamteam run reaching its **first dispatch**: (a) `/dreamteam … --execution workflow` on **Claude Code**; (b) `/dreamteam … --execution background`; (c) `/dreamteam … --execution workflow --platform gemini`; (d) the **same run with no `--execution` flag**.
 - **Expected:** the flag **IS the answer** to the one-time choice, so the conductor **does NOT ask** "Background subagents or the Workflow tool?" — (a) session = **Workflow** mode (Claude-only), prompt **skipped**, mode **surfaced in the first re-anchor line**; (b) session = **background**, prompt **skipped**, surfaced the same way; (c) `workflow` is **INVALID on a non-Claude platform** (no Workflow tool) → **noted clearly + falls back to background subagents**; (d) **no regression** — with no flag the one-time per-session prompt **still governs** (asked once, **default background**, per loop.md). The flag **only pre-sets the existing one-time session choice** — dispatch is still **always background**, there is **no per-workstream re-prompt**, and the produce→gate→fix→integrate loop is **identical**.
 
-> S1–S24 are re-run as regression — these additions are additive.
+> S23–S25 are additive (F10 execution mode · F11 session stickiness · the `--execution` flag); re-run S1–S22 as regression.
 
 ## S26 — bundled-agent load + attribution (`.claude-plugin/plugin.json` + `install.sh`/`install.ps1` + `THIRD_PARTY_NOTICES.md`/`NOTICE`)
 - **Input:** the installed plugin + its `plugin.json` `agents[]`, the `vendor/` tree, the install dep-check output, and `NOTICE` / `THIRD_PARTY_NOTICES.md`.

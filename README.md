@@ -105,11 +105,10 @@ dreamteam also installs as a Claude Code plugin marketplace:
 
 ## Quickstart
 
-With [Install](#install) done, point dreamteam at a task, a profile, or an approved plan:
+With [Install](#install) done, point dreamteam at a task or an approved plan:
 
 ```
 /dreamteam "add OAuth login to our web app"           # auto-picks the web crew, runs the gated loop
-/dreamteam --profile audit "find bugs in this repo"   # read-only, ultrareview-style bug-finder
 /dreamteam docs/plans/my-plan.md                      # execute an already-approved plan
 ```
 
@@ -149,7 +148,7 @@ The three stages in detail:
 <details>
 <summary>Three design pillars</summary>
 
-- **correct.** Every workstream passes a verification gate. The Reality Checker sits on every panel, matches claims against evidence (tests for code, data against claim for research), and throws out faked or over-claimed coverage. It also runs a mutation check: a green suite that still passes against a deliberately broken implementation gets rejected, not trusted.
+- **correct.** Every workstream passes a verification gate. The Reality Checker sits on every panel, matches claims against evidence (tests for code, data against claim for research), and throws out faked or over-claimed coverage.
 - **versatile.** One loop, a swappable crew. The same machinery handles builds, audits, research, and QA. Only the crew changes.
 - **minimal.** The least code that fully works, without cutting validation or security to get there.
 
@@ -386,4 +385,4 @@ No. dreamteam's conductor dispatches every workstream to a background agent. Onc
 
 Apache-2.0. See [LICENSE](LICENSE).
 
-[^prior-art]: dreamteam didn't invent verification-led orchestration. loki-mode and the Edict pattern cover nearby ground, and larger systems like ECC and metaswarm run their own verification loops and quality gates. The honest difference is the shape: a single opt-in skill rather than a standing platform, with one honesty gate that is mandatory by construction instead of optional wiring. metaswarm is the closest functional peer, since it also spans Claude, Gemini, and Codex and enforces gates of its own.
+[^prior-art]: dreamteam didn't invent verification-led orchestration. loki-mode and the Edict pattern cover nearby ground, and larger systems like ECC and metaswarm run their own verification loops and quality gates. The difference is the shape: a single opt-in skill rather than a standing platform, with one honesty gate that is mandatory by construction instead of optional wiring. metaswarm is the closest functional peer, since it also spans Claude, Gemini, and Codex and enforces gates of its own.

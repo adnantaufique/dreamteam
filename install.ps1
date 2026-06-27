@@ -1,6 +1,6 @@
 # Manual install of the dreamteam skill to ~/.claude/skills/dreamteam (Windows),
 # then a best-effort dependency check. Plugin users can instead run:
-#   /plugin marketplace add <owner>/dreamteam  ;  /plugin install dreamteam@dreamteam-marketplace
+#   /plugin marketplace add <owner>/dreamteam  &&  /plugin install dreamteam@dreamteam-marketplace
 $dst = "$env:USERPROFILE\.claude\skills\dreamteam"
 if (Test-Path $dst) { Remove-Item -Recurse -Force $dst }   # clean mirror: prune stale files
 New-Item -ItemType Directory -Force $dst | Out-Null

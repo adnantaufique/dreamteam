@@ -16,7 +16,7 @@ Each reviewer is dispatched at its manifest model tier (default capable; Reality
 ## 2. Synthesize — the conductor does this, visibly
 1. **Dedup** findings that name the same root cause across reviewers.
 2. **Prioritize** Critical → High → Medium → Low.
-3. **Reconcile conflicts with evidence.** If one reviewer *predicts* a problem and another reviewer's hard evidence (a green build, a passing test, a benchmark, the data) *refutes* it → **the evidence wins: drop the refuted finding** and note why. Evidence beats opinion: unproven claims are guilty-until-evidenced; a predicted finding loses to hard evidence. (A finding that evidence does *not* touch still stands.)
+3. **Reconcile conflicts with evidence.** If one reviewer *predicts* a problem and another reviewer's hard evidence (a green build, a passing test, a benchmark, the data) *refutes* it → **the evidence wins: drop the refuted finding** and note why. Evidence beats opinion: unproven claims are guilty-until-evidenced; a predicted finding loses to hard evidence. (A finding that evidence does *not* touch still stands.) A **graph-derived finding** (from `graphify`/`--graph`) is itself a prediction — an **unconfirmed candidate** until reproduced against live code/tests (`INFERRED`/`AMBIGUOUS` edges are hints, not facts), so the graph **never decides a verdict** (`loop.md` §Graph).
 4. **Decide the verdict:**
    - **pass** — no surviving Critical/High; `min_pass` reviewers passed; Reality Checker passed.
    - **fix-then-pass** — surviving Critical/High must-fixes that are bounded and fixable in-loop.
