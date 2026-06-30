@@ -5,7 +5,7 @@ After a run, the conductor learns from what actually happened — adapting SIA's
 **SIA → dreamteam mapping:** meta-agent ≈ Caster/planner · target-agent ≈ producers · feedback-agent ≈ this retro reviewer · evaluator ≈ the gate.
 
 ## The run record (what the retro reads)
-The **run record** is the conductor's per-run **report buffer** — the same per-workstream verdicts, must-fixes, escalation tier-paths, and fix-iteration counts the loop already prints (`loop.md` §Report). The retro consumes that buffer; it does **not** require a new persisted artifact.
+The **run record** is the conductor's per-run **report buffer** — the same per-workstream verdicts, must-fixes, escalation tier-paths, and fix-iteration counts, and the decision log the loop already prints (`loop.md` §Report). The retro consumes that buffer; it does **not** require a new persisted artifact.
 
 ## The retro procedure
 At run end (when `--retro` is on — the default), the conductor dispatches a **feedback** reviewer with the run record:

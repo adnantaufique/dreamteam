@@ -77,12 +77,25 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 1. **Resolve the dreamteam.** REQUIRED: follow `references/caster.md` (explicit `--roster/--profile/--skills` → use as-is; else profile match; else dispatch a Caster agent). Print the dreamteam + one line of rationale per pick — including each role's model tier (cheapest-that-fits per `references/caster.md`), printed next to each pick — show the abstract tier and the resolved concrete model for the active platform (e.g. standard → sonnet).
 2. **Pick the entry.** A plan-ref (a path to / inline copy of an already-reviewed step-by-step plan) → the core loop. A raw idea (anything else) → run the full-lifecycle wrapper first (REQUIRED: `references/wrapper.md`). **`--profile audit` / `--profile debug` (or an audit-/debug-intent task) → skip the wrapper + plan-writing:** `audit` goes straight to the audit fan-out (`references/audit.md`) — no idea to brainstorm, no plan to write; `debug` goes **reproduce-first** straight to its investigate→fix loop — the failure *is* the spec, so there is nothing to brainstorm or plan (the gate enforces reproduce-then-resolve, `references/gate.md`). Both still run the produce→gate→fix→integrate loop (`audit`'s `integrate` is a no-op, `debug`'s lands the fix); only the wrapper + plan-writing are skipped.
 3. **Run the core loop** over each workstream. **For EVERY workstream → dispatch a producer; there is no inline path.** REQUIRED: `references/loop.md`, gating each via `references/gate.md`.
-4. **Report** each workstream's gate verdict; pause only for genuine decisions/blockers. Then run the retro (if `--retro` on, the default) and surface learnings + any proposed skill deltas (`references/retro.md`).
+4. **Report** each workstream's gate verdict + a short end-of-run **decision log** of the conductor's key calls (the run's report output only — **stateless**, never a persisted store; `references/loop.md` §Report); pause only for genuine decisions/blockers, **classified per §Autonomy** (a User-Challenge pauses even under `auto`). Then run the retro (if `--retro` on, the default) and surface learnings + any proposed skill deltas (`references/retro.md`).
 
 ## Autonomy
-- **auto** (default): propose the dreamteam → proceed; report at each gate; pause only for real decisions.
+The `--autonomy` mode sets the baseline **cadence** (how often the conductor pauses); the **decision taxonomy** below refines it — deciding *which* mid-run decisions warrant surfacing or a pause even under `auto`. The two compose; the taxonomy never relaxes an explicit `confirm`/`step` (those still pause as stated).
+
+- **auto** (default): propose the dreamteam → proceed; report at each gate; pause only for real decisions (a **User-Challenge**, per the taxonomy).
 - **confirm**: confirm the dreamteam, and each gate verdict, before continuing.
 - **step**: pause after every workstream.
+
+### Decision taxonomy (which mid-run decisions warrant a pause)
+When a decision arises mid-run — a roster/tier/scope pick, an ambiguity, a direction the gate or a producer wants to take — classify it before acting:
+
+- **Mechanical** — objectively determined; one defensible answer fixed by the plan, a constraint, or evidence. → **Just proceed** (silent under `auto`).
+- **Taste** — defensible either way; a judgment with no single right answer and low/reversible cost. → **Proceed, but note the choice** (and the alternative not taken).
+- **User-Challenge** — a real judgment call, an **assumption** that would change the user's stated direction, or an **irreversible-or-costly** step. → **PAUSE and ask**, never auto-decided — in **every** mode, including `auto`.
+
+**On a User-Challenge, present the four-part frame and DEFAULT TO THE USER:** (1) the user's stated direction, (2) the recommendation + why, (3) acknowledged blind-spots, (4) the **cost-if-wrong** — then default to the user's choice unless they change it. This is dreamteam's user-sovereignty posture made precise, not a relaxation of `confirm`/`step`.
+
+Taste and User-Challenge decisions (and any noteworthy Mechanical one) are recorded in the end-of-run **decision log** — stateless, in the run's report only (`references/loop.md` §Report).
 
 ## Resilience
 - Agent unavailable → the Caster picks an alternate or flags it.
