@@ -57,6 +57,14 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S39** — the published marketplace path and the install.sh / install.ps1 manual fallback land the same bundle, and the README notes the marketplace is public but not yet client-tested.
 - **S40** — dreamteam loads as a native OpenCode skill (auto-read from `~/.claude/skills`, or synced to `~/.config/opencode/skills`), dispatches via the task tool with provider-agnostic tiers, and runs background-only with no Workflow tool.
 
+## Gate and autonomy hardening (S41–S45)
+
+- **S41** — an unevidenced finding is unverified at emit time: it does not count and is never a must-fix until re-raised with the motivating `file:line`, command output, or reproducing case, while an evidenced (even low-confidence) finding still counts.
+- **S42** — confidence ranks findings for display but never hides one: a high-severity low-confidence finding still surfaces, must-fix stays keyed to severity, and the Reality Checker always reports.
+- **S43** — under `--autonomy auto` the conductor proceeds on Mechanical and Taste calls but pauses on a User-Challenge, presenting the four-part frame and defaulting to the user.
+- **S44** — the run report closes with a stateless decision-log table (report output only, no persisted or event-sourced store) and prints "no notable decisions" when there were none.
+- **S45** — the security reviewer may follow the stack-neutral OWASP/STRIDE method scope-aware and infra-first, its findings enter the gate like any other with no new verdict, and the gstack methodology-only attribution is present.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].

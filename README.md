@@ -303,12 +303,15 @@ Economize by combining the cost and autonomy flags:
 
 - **`audit` profile** (`references/audit.md`). A read-only, ultrareview-style sweep, either a bug-finder (`--mode bugs`) or a project map (`--mode map`). Dimension reviewers are dispatched as producers, and the gate then reproduces or refutes each candidate. Findings that don't reproduce get dropped. `integrate` is a no-op, since the report is the artifact and nothing lands in the audited tree. `--depth shallow|module|exhaustive` tunes fan-out, with exhaustive budget-printed and confirm-gated.
 - **Devil's advocate on unanimous** (`references/gate.md`). An opt-in reviewer: one extra `capable` reviewer charged with refuting a unanimous pass. Off by default, on for `audit`.
+- **Evidence at emit time** (`references/gate.md`). A reviewer can't raise a finding without quoting what motivates it: the `file:line`, the failing command and its output, or a case that reproduces it. A finding with nothing behind it doesn't count. It's logged as an unverified note, never a must-fix, until someone re-raises it with the evidence. That catches a confidently-wrong claim before it's ever voiced, on top of the older rule that a refuted prediction loses to hard evidence at synthesis time.
+- **Confidence on every finding** (`references/gate.md`). Findings carry a confidence (how certain the claim is real) alongside severity (how much it would hurt). The two are separate axes, so the panel can surface a proven bug ahead of a hunch. Confidence only affects display order. It never hides anything: a high-severity finding always surfaces whatever its confidence, the Reality Checker always reports, and must-fix status still rides on severity alone. Ranking down a low-signal note is allowed; burying a real one is not.
+- **Security method** (`references/security.md`). When security is in scope, the security reviewer can follow a stack-neutral OWASP and STRIDE checklist (secrets, dependencies and supply chain, CI/CD config, the OWASP Top 10, STRIDE per component, LLM/AI surfaces, and the skill supply chain) instead of relying on whatever the cast agent happens to know. It's a checklist the reviewer reads, not a scanner or a new gate step. Its findings enter the gate like any other, with the same emit-time evidence and the same verdict.
 
 ### Learning and lifecycle
 
 - **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) emits evidence-tagged learnings the Caster consults next time. Skill self-edits are proposed and human-gated, never automatic. `--evolve` adds an opt-in benchmark-evolution loop for ai-research (`references/evolve.md`).
 - **Wrapper** (`references/wrapper.md`). For a raw idea rather than a plan, it sequences `brainstorming → writing-plans → loop` and keeps the human approval gates in place.
-- **Autonomy.** `auto` proposes the crew, then proceeds and reports at gates. `confirm` confirms the crew and each verdict. `step` pauses per workstream.
+- **Autonomy.** `auto` proposes the crew, then proceeds and reports at gates. `confirm` confirms the crew and each verdict. `step` pauses per workstream. On top of that cadence, the conductor classifies each mid-run call as Mechanical (decided by the plan or the evidence, so it just proceeds), Taste (defensible either way, so it proceeds and notes the choice), or a User-Challenge (a call that would change your stated direction or take a costly, hard-to-reverse step). A User-Challenge always pauses and asks, even under `auto`, and defaults to your choice. The run report ends with a short decision log of these calls. It lives in the report only, with no persisted store, since dreamteam stays stateless.
 
 ## Dependencies
 
@@ -337,10 +340,11 @@ skills/dreamteam/
     platforms.md      # per-CLI tool / dispatch / model-tier map (Claude · Codex · Gemini · CodeWhale · OpenCode)
     audit.md          # the audit profile — read-only bug-finding / project-map sweeps
     recommend.md      # advisory skill/resource recommendations (Caster recommends, never installs)
+    security.md       # OWASP/STRIDE security review method (adapted from gstack)
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S40 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
+tests/scenarios.md    # S1–S45 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
 docs/VALIDATION.md    # the same scenarios as a one-line indexed list
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
@@ -349,7 +353,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 40 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, and the bundled-agent build. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
+The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 45 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, and the gate and autonomy hardening. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
 
 ## FAQ / Troubleshooting
 

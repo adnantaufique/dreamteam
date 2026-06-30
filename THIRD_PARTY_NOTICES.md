@@ -41,6 +41,11 @@ bodies.
   the opt-in installer), not redistributed -> no notices entry, no fork drift.
 - **graphify** (Copyright (c) 2026 Safi Shamsi, MIT) is **recommend-only** (an
   external tool, never vendored) -> no notices entry.
+- **gstack** (Copyright (c) Garry Tan, `garrytan/gstack`, MIT) is **methodology-only**:
+  its OWASP/STRIDE security approach is **adapted into `references/security.md`** and
+  credited in place there, but **no gstack code is vendored** -> **no notices entry**.
+  The in-place credit mirrors the ECC verification-loop adaptation's credit; the
+  no-entry-because-not-redistributed mirrors graphify and find-skills.
 - **find-skills** (vercel-labs/skills) is **recommend-only** and declares MIT but
   ships **no LICENSE file** -> treated as `NOASSERTION`; MIT is not asserted for
   it, and it is not vendored.
