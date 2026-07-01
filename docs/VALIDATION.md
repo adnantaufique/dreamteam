@@ -65,6 +65,12 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S44** — the run report closes with a stateless decision-log table (report output only, no persisted or event-sourced store) and prints "no notable decisions" when there were none.
 - **S45** — the security reviewer may follow the stack-neutral OWASP/STRIDE method scope-aware and infra-first, its findings enter the gate like any other with no new verdict, and the gstack methodology-only attribution is present.
 
+## Run-level safety (S46–S48)
+
+- **S46** — a dispatched leaf does its one briefed task and returns: it never re-invokes `/dreamteam`, orchestrates, or spawns further subagents; session stickiness and the conductor rules bind only the main session; and both the `<SUBAGENT-STOP>` block and the leaf-firewall dispatch brief hold the depth-1 invariant by identity rather than a counter.
+- **S47** — the `run_policy` caps are mechanical and on by default: excess concurrency serializes rather than fanning wider (8, ceiling 16), reaching the cumulative dispatch backstop (60) stops the run and escalates to a human, and a large projected fan-out (30) prints its cost and waits for confirmation even under auto.
+- **S48** — execution discipline: a producer watches each shell command to completion and reads its output before proceeding, uses a bounded poll for a backgrounded command, and never abandons the task in an open-ended wait state.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].

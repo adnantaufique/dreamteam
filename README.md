@@ -228,6 +228,8 @@ Reviewers never drop below `capable`, so they're the largest steady cost. To eco
 - `--autonomy confirm` gates spend by confirming the crew and each verdict before work proceeds
 - `--depth shallow|module` and a tighter task keep fan-out small
 
+Those are the knobs you turn. A run also carries caps you don't set: a concurrency ceiling, a cumulative dispatch backstop that stops and escalates if a run runs away, and a confirm-gate that prints the projected cost before a large fan-out, even under `--autonomy auto`. See [Safety guardrails](#safety-guardrails).
+
 ## Profiles (seed set)
 
 <details>
@@ -307,6 +309,13 @@ Economize by combining the cost and autonomy flags:
 - **Confidence on every finding** (`references/gate.md`). Findings carry a confidence (how certain the claim is real) alongside severity (how much it would hurt). The two are separate axes, so the panel can surface a proven bug ahead of a hunch. Confidence only affects display order. It never hides anything: a high-severity finding always surfaces whatever its confidence, the Reality Checker always reports, and must-fix status still rides on severity alone. Ranking down a low-signal note is allowed; burying a real one is not.
 - **Security method** (`references/security.md`). When security is in scope, the security reviewer can follow a stack-neutral OWASP and STRIDE checklist (secrets, dependencies and supply chain, CI/CD config, the OWASP Top 10, STRIDE per component, LLM/AI surfaces, and the skill supply chain) instead of relying on whatever the cast agent happens to know. It's a checklist the reviewer reads, not a scanner or a new gate step. Its findings enter the gate like any other, with the same emit-time evidence and the same verdict.
 
+### Safety guardrails
+
+Two things keep a run bounded, and it's worth being honest about what they are. On the background-subagent path (four of the five CLIs, plus Claude Code's default mode) they're model-compliance rules and tripwires, not a hard sandbox: nothing at the OS level halts a misbehaving agent, so the rules are written to be hard to miss and are checked as the run goes. On Claude Code with the Workflow tool a real limit sits underneath as a second layer, but the design doesn't lean on it.
+
+- **Recursion firewall.** A dispatched agent is a leaf. It does its one task and returns, and it never re-invokes `/dreamteam`, acts as the conductor, or spawns its own subagents. Only the conductor dispatches, so the call tree stays one level deep by identity rather than by a counter anyone tracks. Session stickiness, the rule that keeps later tasks inside dreamteam once you've invoked it, is the conductor's alone and never reaches a leaf. The firewall is stated twice on purpose: at the top of the skill for an agent that auto-loads it, and in every dispatch brief for one that never loads it at all. Three run-wide caps ride alongside it, all on by default with no flag: a concurrency ceiling (8, hard limit 16) that serializes the excess instead of fanning wider, a cumulative dispatch backstop (60) that stops the run and escalates to you instead of continuing quietly, and a confirm-gate that prints the projected cost and waits for your OK before a large fan-out, even under `--autonomy auto`.
+- **Execution discipline.** A producer that runs a shell command watches it to completion and reads the output and exit status before it moves on. It won't proceed on a command it didn't see finish, because a command you never observed is not evidence. Anything long-running or backgrounded gets a bounded wait with a timeout and then a check of the result, never an open-ended one; if it hangs past the bound the producer kills and retries once, or reports the hang and continues with what it has, rather than parking the task in a wait state. This is a discipline the model follows, not something the harness enforces: the harness owns the shell, and this is the obligation to actually watch it.
+
 ### Learning and lifecycle
 
 - **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) emits evidence-tagged learnings the Caster consults next time. Skill self-edits are proposed and human-gated, never automatic. `--evolve` adds an opt-in benchmark-evolution loop for ai-research (`references/evolve.md`).
@@ -344,7 +353,7 @@ skills/dreamteam/
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S45 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
+tests/scenarios.md    # S1–S48 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
 docs/VALIDATION.md    # the same scenarios as a one-line indexed list
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
@@ -353,7 +362,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 45 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, and the gate and autonomy hardening. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
+The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 48 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, and the run-level safety guardrails. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
 
 ## FAQ / Troubleshooting
 
