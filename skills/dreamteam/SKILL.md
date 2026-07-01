@@ -3,6 +3,16 @@ name: dreamteam
 description: Use when a multi-step task or an approved plan should be driven to a verified, independently-reviewed result by orchestrating specialist agents across domains (software builds, ML/CV research, devops, QA) — when one task needs several specialists, when you want review gates between steps instead of one unreviewed dump, or when you have a plan to execute with quality checkpoints.
 ---
 
+<SUBAGENT-STOP>
+If you were dispatched as a subagent for a dreamteam run — a producer, reviewer,
+planner, designer, Caster, or setup agent — you are a **LEAF**. Do only the one
+task in your dispatch brief and return. Do **NOT** invoke `/dreamteam`, do **NOT**
+act as the conductor, do **NOT** orchestrate, and do **NOT** spawn any further
+subagents or Workflow scripts. The "You are the conductor" and "Session stickiness"
+rules below bind ONLY the conductor / main session — they never apply to you.
+Follow your brief, not the rest of this skill.
+</SUBAGENT-STOP>
+
 # Dreamteam
 
 ## Overview
@@ -15,10 +25,12 @@ For **builds**, dreamteam is spec-driven by default — the wrapper turns a raw 
 
 Runs on Claude Code, Codex CLI, Gemini CLI, CodeWhale, and OpenCode — tool names, subagent dispatch, and model tiers resolve per `references/platforms.md` (`--platform` defaults to auto-detect).
 
-**Opt-in:** this runs multi-agent orchestration only when explicitly invoked (`/dreamteam …`).
+**Opt-in:** this runs multi-agent orchestration only when explicitly invoked (`/dreamteam …`). This is an **invocation gate on the conductor** entering orchestration — it is **NOT** a leaf/auto-load guard. A subagent whose context auto-loads this skill by description-match is stopped by the `<SUBAGENT-STOP>` block above (identity, read first), not by this line.
 
 ## You are the conductor
 **You are the conductor — you do NOT produce workstreams yourself.** Every workstream's artifact is produced by a **dispatched producer subagent**. You may ONLY: resolve the crew, **dispatch** producers/reviewers, synthesize gate findings, **integrate** a *verified* result (merge/commit/land), and report. You may read files for orchestration. You may **NOT** write code, edit files, or run builds/experiments to *produce* a workstream's artifact — that is the producer's job, and doing it yourself skips the independent gate. **When you synthesize and report, do so objectively — no glazing:** state each gate verdict plainly and never soften a fix-then-pass or needs-work into something rosier than the evidence supports (the standing **objective** principle, applied to your own synthesis). **When you integrate, write each commit for an outside reader** — a conventional-commit subject describing *what changed* (plus the *why* when useful), **never** dreamteam's internal labels (no build-phase names like `Phase A`, no plan/checklist IDs, no workstream numbers); the standard + self-check live in `references/loop.md` §"Commit-message standard".
+
+**Dreamteam runs at depth 1 — conductor → leaves, one level.** There is no legal depth ≥ 2: a dispatched leaf never orchestrates (`<SUBAGENT-STOP>` above), so depth is **structurally bounded by identity, not counter-tracked** — no shared depth counter across the call tree is needed or kept (`run_policy.max_depth: 1` in `references/caster.md` states the invariant).
 
 | Conductor MAY | Conductor MUST NOT |
 |---|---|
@@ -41,6 +53,8 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 **Editing a file to produce a workstream — *or* dispatching producers foreground/inline in the main chat — violates the letter AND the spirit of dreamteam. STOP and dispatch in the background.**
 
 ## Session stickiness
+**This rule binds ONLY the conductor / main session — NEVER a dispatched subagent.** A dispatched unit (producer, reviewer, planner, designer, Caster, setup) is a LEAF: session stickiness never applies to it — it does its one briefed task and returns (see the `<SUBAGENT-STOP>` block at the top of this skill). A leaf has its *own* conversation with no shared store telling it the parent already owns orchestration, so the scope is stated here explicitly to close that inheritance at the source, not only at the leaf's entry.
+
 **Once `/dreamteam` is invoked in a session, every subsequent task that produces/changes an artifact runs through dreamteam** — this extends "don't drift inline *mid-run*" to "stay in dreamteam-mode *all session*." Don't silently revert to inline on the next task.
 
 **Session-scoped + best-effort:** the mode holds for the rest of the SESSION (across runs), tracked as conversation state — the skill is stateless, so there is no persisted store. *Best-effort:* if the decision/opt-out has fallen out of context, RE-state or RE-ask rather than assume; it is not a hard guarantee over a very long session.
@@ -71,7 +85,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
       [--retro on|off] [--learnings <path>] [--evolve [generations=N]]
 ```
 
-**Flags:** `--models` sets model tiers per role; `--cost` biases the rubric (default balanced). Tiers are abstract — `cheap|standard|capable|max` — resolved to a concrete model per platform (Claude: haiku|sonnet|opus|fable) via `references/platforms.md`. `--retro` (default on) runs the end-of-run retro (`references/retro.md`); `--learnings` overrides the store path; `--evolve` opts into Layer-B benchmark evolution (`references/evolve.md`; ai-research; requires an evaluator + ground truth; budget-printed; human-gated). `--depth`/`--mode` apply to the `audit` profile (`references/audit.md`): `--mode` defaults `bugs` (read-only bug-finding) vs `map` (project map); `--depth` is `shallow|module|exhaustive`, where `exhaustive` is budget-printed + confirm-gated. `--execution background|workflow` pre-sets the per-session execution mode (skipping the one-time prompt; see `references/loop.md`) — `workflow` is Claude-Code-only and on other CLIs falls back to background subagents (`references/platforms.md`). `--graph on|off|auto` (default `auto`) toggles the optional AST code-graph (`graphify`) the conductor keeps as navigation infra: `auto` builds/reuses it when `graphify` is installed and the repo isn't oversized — else skips silently; `off` disables it; `on` requests it (still skip-if-absent, never auto-installed). The graph is **conductor infra — never a gated workstream and never a verdict**; any graph-derived claim that would gate a workstream is verified against live code/tests (`references/loop.md` §Graph, `references/audit.md`). Recommendations are advisory + default-on (surfaced only on a real capability gap); installing one is opt-in + human-gated (reuses `--autonomy`; `auto` never auto-installs).
+**Flags:** `--models` sets model tiers per role; `--cost` biases the rubric (default balanced). Tiers are abstract — `cheap|standard|capable|max` — resolved to a concrete model per platform (Claude: haiku|sonnet|opus|fable) via `references/platforms.md`. `--retro` (default on) runs the end-of-run retro (`references/retro.md`); `--learnings` overrides the store path; `--evolve` opts into Layer-B benchmark evolution (`references/evolve.md`; ai-research; requires an evaluator + ground truth; budget-printed; human-gated). `--depth`/`--mode` apply to the `audit` profile (`references/audit.md`): `--mode` defaults `bugs` (read-only bug-finding) vs `map` (project map); `--depth` is `shallow|module|exhaustive`, where `exhaustive` is budget-printed + confirm-gated. `--execution background|workflow` pre-sets the per-session execution mode (skipping the one-time prompt; see `references/loop.md`) — `workflow` is Claude-Code-only and on other CLIs falls back to background subagents (`references/platforms.md`). `--graph on|off|auto` (default `auto`) toggles the optional AST code-graph (`graphify`) the conductor keeps as navigation infra: `auto` builds/reuses it when `graphify` is installed and the repo isn't oversized — else skips silently; `off` disables it; `on` requests it (still skip-if-absent, never auto-installed). The graph is **conductor infra — never a gated workstream and never a verdict**; any graph-derived claim that would gate a workstream is verified against live code/tests (`references/loop.md` §Graph, `references/audit.md`). Recommendations are advisory + default-on (surfaced only on a real capability gap); installing one is opt-in + human-gated (reuses `--autonomy`; `auto` never auto-installs). **Run-level safety is default-on (no flag needed):** `run_policy` (`references/caster.md`) caps the run's breadth (`max_concurrent_agents`) and cumulative dispatches (`max_total_dispatches` → STOP + escalate on reaching it), and forces a budget-print + confirm-gate on a large projected fan-out (`budget_confirm_at`) — even under `--autonomy auto`.
 
 ## The spine
 1. **Resolve the dreamteam.** REQUIRED: follow `references/caster.md` (explicit `--roster/--profile/--skills` → use as-is; else profile match; else dispatch a Caster agent). Print the dreamteam + one line of rationale per pick — including each role's model tier (cheapest-that-fits per `references/caster.md`), printed next to each pick — show the abstract tier and the resolved concrete model for the active platform (e.g. standard → sonnet).
@@ -100,7 +114,8 @@ Taste and User-Challenge decisions (and any noteworthy Mechanical one) are recor
 ## Resilience
 - Agent unavailable → the Caster picks an alternate or flags it.
 - The gate's fix loop is capped (`gate_policy.max_fix_iterations`); on exhaustion, escalate to the human — never weaken the bar to force a pass.
-- Be scope/budget aware — orchestration spawns many agents; don't run away.
+- **Run-level caps are mechanical, not advisory** (`run_policy` in `references/caster.md`): a run-wide `max_concurrent_agents` (default 8, hard ceiling 16), a cumulative `max_total_dispatches` backstop (default 60 → on reaching it, **STOP and escalate to the human, never silently continue**), and `max_depth: 1` (the firewall guarantees it). A large projected fan-out hits a budget-print + confirm-gate before running (`budget_confirm_at`, default 30 — generalizes `--depth exhaustive` / `--evolve` to any large run).
+- **Honest limitation of the prose fix.** On the background-subagent path (4 of 5 CLIs + Claude Code's default mode) the firewall and the `run_policy` caps are **model-compliance rules + tripwires, NOT a hard runtime kill-switch** — the identity firewall is the most compliance-robust prose form available (unconditional, placed first, role-keyed, delivered on both the skill body and every dispatch brief), and the numeric caps are tripwires that catch a runaway, not sandboxed guarantees. Where a hard limit exists (Claude Code + the Workflow tool's own limits, where they apply) it remains as a second layer underneath, but the design does not rely on it.
 
 ## Composes (do not reinvent)
 REQUIRED SUB-SKILLS: `superpowers:brainstorming`, `superpowers:writing-plans`, `superpowers:using-git-worktrees`, `superpowers:verification-before-completion`, `superpowers:finishing-a-development-branch`, `find-skills`.
