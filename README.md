@@ -315,6 +315,25 @@ Two things keep a run bounded, and it's worth being honest about what they are. 
 
 - **Recursion firewall.** A dispatched agent is a leaf. It does its one task and returns, and it never re-invokes `/dreamteam`, acts as the conductor, or spawns its own subagents. Only the conductor dispatches, so the call tree stays one level deep by identity rather than by a counter anyone tracks. Session stickiness, the rule that keeps later tasks inside dreamteam once you've invoked it, is the conductor's alone and never reaches a leaf. The firewall is stated twice on purpose: at the top of the skill for an agent that auto-loads it, and in every dispatch brief for one that never loads it at all. Three run-wide caps ride alongside it, all on by default with no flag: a concurrency ceiling (8, hard limit 16) that serializes the excess instead of fanning wider, a cumulative dispatch backstop (60) that stops the run and escalates to you instead of continuing quietly, and a confirm-gate that prints the projected cost and waits for your OK before a large fan-out, even under `--autonomy auto`.
 - **Execution discipline.** A producer that runs a shell command watches it to completion and reads the output and exit status before it moves on. It won't proceed on a command it didn't see finish, because a command you never observed is not evidence. Anything long-running or backgrounded gets a bounded wait with a timeout and then a check of the result, never an open-ended one; if it hangs past the bound the producer kills and retries once, or reports the hang and continues with what it has, rather than parking the task in a wait state. This is a discipline the model follows, not something the harness enforces: the harness owns the shell, and this is the obligation to actually watch it.
+- **Optional hard enforcement (Claude Code).** Claude Code fires `PreToolUse` hooks inside dispatched subagents, not only the main session — a leaf's tool calls carry a non-null agent id, the conductor's don't. dreamteam ships an **opt-in** hook (`hooks/dreamteam-run-policy.js`, **off by default**; set `DREAMTEAM_ENFORCE=1` to arm) that uses this to turn two of the prose guards into real blocks: a leaf that tries to dispatch or re-invoke `/dreamteam` is denied outright (the recursion firewall), and the conductor's own dispatches are capped hard at `max_total_dispatches`. It is **fail-open** — any parse or IO error allows, so it can't be the reason a legitimate call is blocked — and **Claude-Code-only**. The prose guards stay the default everywhere and are the *only* layer on Codex, Gemini, CodeWhale, and OpenCode; the budget confirm-gate and the shell-timeout discipline stay prose on Claude Code too. Installed as the plugin, the hook auto-wires (still inert until you set `DREAMTEAM_ENFORCE=1`). For a skill-only install, paste this into your Claude Code `settings.json` (point the path at your dreamteam checkout):
+
+  ```json
+  {
+    "env": { "DREAMTEAM_ENFORCE": "1" },
+    "hooks": {
+      "PreToolUse": [
+        {
+          "matcher": "Agent|Task|Skill",
+          "hooks": [
+            { "type": "command", "command": "node \"/ABSOLUTE/PATH/TO/dreamteam/hooks/dreamteam-run-policy.js\"" }
+          ]
+        }
+      ]
+    }
+  }
+  ```
+
+  Optional env knobs: `DREAMTEAM_MAX_TOTAL_DISPATCHES` (default 60) and `DREAMTEAM_RUN_TTL_MS` (stale-run auto-reset, default 12h).
 
 ### Learning and lifecycle
 

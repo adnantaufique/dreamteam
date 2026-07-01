@@ -29,7 +29,8 @@
     "./vendor/superclaude/root-cause-analyst.md",
     "./vendor/superclaude/system-architect.md",
     "./vendor/superclaude/python-expert.md"
-  ]
+  ],
+  "hooks": "./hooks/hooks.json"
 }
 
 
