@@ -3,7 +3,8 @@
 # Usage: bash scripts/sync-to-opencode.sh [target-dir]   (default: ~/.config/opencode/skills/dreamteam)
 # Note: OpenCode also natively reads ~/.claude/skills, so a dreamteam installed via install.sh is already discoverable — this sync is for OpenCode-only setups.
 set -euo pipefail
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${1:-$HOME/.config/opencode/skills/dreamteam}"
 mkdir -p "$TARGET"
-cp -r skills/dreamteam/SKILL.md skills/dreamteam/references "$TARGET/"
+cp -r "$REPO/skills/dreamteam/SKILL.md" "$REPO/skills/dreamteam/references" "$TARGET/"
 echo "synced dreamteam -> $TARGET"
