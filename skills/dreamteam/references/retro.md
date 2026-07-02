@@ -5,13 +5,14 @@ After a run, the conductor learns from what actually happened — adapting SIA's
 **SIA → dreamteam mapping:** meta-agent ≈ Caster/planner · target-agent ≈ producers · feedback-agent ≈ this retro reviewer · evaluator ≈ the gate.
 
 ## The run record (what the retro reads)
-The **run record** is the conductor's per-run **report buffer** — the same per-workstream verdicts, must-fixes, escalation tier-paths, and fix-iteration counts, and the decision log the loop already prints (`loop.md` §Report). The retro consumes that buffer; it does **not** require a new persisted artifact.
+The **run record** is the conductor's per-run **report buffer** — the same per-workstream verdicts, must-fixes, escalation tier-paths, and fix-iteration counts, and the decision log and dispatch-reliability record the loop already prints (`loop.md` §Report). The retro consumes that buffer; it does **not** require a new persisted artifact.
 
 ## The retro procedure
 At run end (when `--retro` is on — the default), the conductor dispatches a **feedback** reviewer with the run record:
 - per-workstream gate verdicts + must-fixes + the **evidence** behind each pass;
 - **escalations** — which roles hit BLOCKED/needs-work and what tier finally cleared them (from F1's reported tier path);
-- fix-iteration counts; agent/tier substitutions; first-try misses.
+- fix-iteration counts; agent/tier substitutions; first-try misses;
+- **dispatch reliability** (`loop.md` §Report) — per role: drops by failure class (dropped-without-returning vs returned-but-inadmissible), recovery re-dispatches, schema-cap schema-free re-runs, and refuter outcomes (refuted-and-dropped vs stood). The feedback reviewer may cite these counts as run evidence for a learning — a role that repeatedly drops, or a reviewer whose predictions are repeatedly refuted, is itself an evidence-backed learning.
 
 The feedback reviewer emits a **learnings record** (schema below), which is appended to `references/learnings.md`.
 

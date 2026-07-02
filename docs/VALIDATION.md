@@ -81,6 +81,11 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S51** — with `risk_scaling` on (the default) the gate dispatches a risk-scaled reviewer subset per workstream (low → Reality Checker only, standard → plus the most relevant domain reviewer, high → the full panel; security in scope → `high` by the sensitive-surface heuristic), always keeping the Reality Checker and force-including any in-scope non-waivable reviewer, counting `min_pass` over the dispatched subset, printing the class in the re-anchor line (`risk off` when scaling is off or the panel pinned), and pinning the full panel under `off`, `--full-gate`, `--cost quality`, or an explicit roster — audit's own fan-out untouched.
 - **S52** — on platforms with an effort dial (Codex; Claude Code Workflow mode) a cheap-tier mechanical producer may run at low effort while reviewers never drop below the platform default; the dial complements the tier rubric rather than substituting for a tier drop, and the Agent-tool / background path simply has no dial, which is not an error.
 
+## Accuracy: refuter + reliability (S53–S54)
+
+- **S53** — once per gate, before the first fix iteration only (never on needs-work, never inside later iterations), each must-fix that is a prediction gets one standard-tier refuter charged to run the check that settles it: hard refuting evidence drops the finding per evidence-beats-prediction, no evidence leaves it standing, an already-evidenced must-fix gets no refuter, and the refuter is an evidence-producer rather than a reviewer — the capable reviewer floor holds and its dispatches count toward the run cap.
+- **S54** — the report buffer carries a per-role dispatch-reliability tally (drops by failure class, recovery re-dispatches, schema-free re-runs, refuter outcomes) the retro's feedback reviewer can cite as run evidence for a learning; it is report output only, with no persisted store.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].

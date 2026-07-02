@@ -5,7 +5,7 @@ description: Use when a multi-step task or an approved plan should be driven to 
 
 <SUBAGENT-STOP>
 If you were dispatched as a subagent for a dreamteam run — a producer, reviewer,
-planner, designer, Caster, or setup agent — you are a **LEAF**. Do only the one
+refuter, planner, designer, Caster, or setup agent — you are a **LEAF**. Do only the one
 task in your dispatch brief and return. Do **NOT** invoke `/dreamteam`, do **NOT**
 act as the conductor, do **NOT** orchestrate, and do **NOT** spawn any further
 subagents or Workflow scripts. The "You are the conductor" and "Session stickiness"
@@ -53,7 +53,7 @@ If you catch yourself thinking any of these, STOP — you are about to drift inl
 **Editing a file to produce a workstream — *or* dispatching producers foreground/inline in the main chat — violates the letter AND the spirit of dreamteam. STOP and dispatch in the background.**
 
 ## Session stickiness
-**This rule binds ONLY the conductor / main session — NEVER a dispatched subagent.** A dispatched unit (producer, reviewer, planner, designer, Caster, setup) is a LEAF: session stickiness never applies to it — it does its one briefed task and returns (see the `<SUBAGENT-STOP>` block at the top of this skill). A leaf has its *own* conversation with no shared store telling it the parent already owns orchestration, so the scope is stated here explicitly to close that inheritance at the source, not only at the leaf's entry.
+**This rule binds ONLY the conductor / main session — NEVER a dispatched subagent.** A dispatched unit (producer, reviewer, refuter, planner, designer, Caster, setup) is a LEAF: session stickiness never applies to it — it does its one briefed task and returns (see the `<SUBAGENT-STOP>` block at the top of this skill). A leaf has its *own* conversation with no shared store telling it the parent already owns orchestration, so the scope is stated here explicitly to close that inheritance at the source, not only at the leaf's entry.
 
 **Once `/dreamteam` is invoked in a session, every subsequent task that produces/changes an artifact runs through dreamteam** — this extends "don't drift inline *mid-run*" to "stay in dreamteam-mode *all session*." Don't silently revert to inline on the next task.
 
