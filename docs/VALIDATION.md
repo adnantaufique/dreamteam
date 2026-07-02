@@ -88,9 +88,13 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 
 ## Dispatch efficiency (S55–S57)
 
-- **S55** — a fix iteration re-verifies the delta (must-fix confirmation plus the fix's own diff), never a fresh full review of the workstream, while a fix that expands beyond the reviewed diff is re-classified over the expanded surface and gets a fresh review by the panel of its re-derived risk class, with §2 re-synthesis unchanged.
+- **S55** — a fix iteration re-verifies the delta (must-fix confirmation plus the fix's own diff), never a fresh full review of the workstream, while a fix that expands beyond the reviewed diff is re-classified over the expanded surface and gets a fresh review by the panel of its re-derived risk class — after which the expanded files join the reviewed diff, so a later fix re-touching them gets delta re-verification rather than a second fresh review — with §2 re-synthesis unchanged.
 - **S56** — every post-cast dispatch brief opens with the byte-identical firewall-first fixed-order preamble of standing briefs (security occupying its slot only when cast) and all per-leaf content strictly after; no rule's content changes — the ordering rule costs nothing on platforms without prefix caching, and caching hits the shared prefix where supported.
 - **S57** — each dispatch hands the unit its working set (file paths, entry points, graph pointers when the graph is on); a leaf that must step outside it says so in its return, and a fundamentally wrong set escalates as NEEDS_CONTEXT with a same-tier re-dispatch.
+
+## Budget-aware scaling (S58)
+
+- **S58** — in Workflow mode with a user token target the conductor honors the harness's live token budget as a run ceiling alongside the static caps (the budget projection incorporates it), degrading by scheduling only — serialize, then defer or shrink the remaining fan-out, then stop and escalate — never weakening the gate (no risk reclassification, no sub-class panel, no dropped Reality Checker or non-waivable reviewer, no tier-floor or honesty relaxation; a run that can't afford its gates stops); background and non-Claude runs keep the static caps as the only layer, which is correct behavior rather than an error.
 
 ## Grounding dry-runs
 
