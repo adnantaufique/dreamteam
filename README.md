@@ -184,7 +184,7 @@ Caster → crew manifest (profile: web · platform: claude)
 Execution mode? Background subagents or the Workflow tool? [background] › background
 
 ── WS1: backend OAuth flow ──────────────────────────────────────────────
-Dispatching `backend` for WS1 at capable — background subagents (session mode).
+Dispatching `backend` for WS1 at capable, risk high — background subagents (session mode).
   producer → DONE: /auth/oauth routes + token exchange; 14 unit + 3 integration tests
   gate (parallel panel) → synthesizing…
     Reality Checker  ✗ HIGH: refresh-token test is vacuous — still green when verify_signature()
@@ -199,7 +199,7 @@ Dispatching `backend` for WS1 at capable — background subagents (session mode)
   integrate → merged branch ws1-oauth-backend; worktree cleaned
 
 ── WS2: login UI ────────────────────────────────────────────────────────
-Dispatching `frontend` for WS2 at standard — background subagents (session mode).
+Dispatching `frontend` for WS2 at standard, risk standard — background subagents (session mode).
   producer → BLOCKED: token-refresh race needs more reasoning than this tier carries
   WS2 failed gate at standard → retrying at capable
   producer (capable) → DONE: refresh guarded; 6 component tests
@@ -221,7 +221,7 @@ A run is not a single prompt. A typical task spawns the Caster, a planner, one p
 
 So expect roughly N times the tokens and cost of one prompt, and minutes of wall-clock rather than seconds. In practice that's a handful to about a dozen agent dispatches, more for `--profile audit --depth exhaustive` (which is budget-printed and confirm-gated). The numbers depend on the task, so measure your own runs rather than trusting a made-up figure.
 
-Reviewers never drop below `capable`, so they're the largest steady cost. To economize:
+Reviewers never drop below `capable`, so they're the largest steady cost — but the gate is risk-proportional by default: a low-risk workstream is verified by the Reality Checker alone and only a high-risk one gets the full panel, so panel size scales with the workstream (`--full-gate`, `--cost quality`, or an explicit roster pins the full panel). To economize:
 
 - dispatch always runs in the background, so it doesn't tie up your session
 - `--cost cheap` biases producers to the cheapest tier that fits; reviewers stay `capable`
@@ -290,7 +290,7 @@ Economize by combining the cost and autonomy flags:
       [--depth shallow|module|exhaustive] [--mode bugs|map] [--graph on|off|auto]
       [--roster planner=…,producers=<role>:<agent>[@<tier>][+<skill>];…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step] [--execution background|workflow]
-      [--models …] [--cost cheap|balanced|quality] [--platform claude|codex|gemini|codewhale|opencode]
+      [--models …] [--cost cheap|balanced|quality] [--full-gate] [--platform claude|codex|gemini|codewhale|opencode]
       [--retro on|off] [--learnings <path>] [--evolve [generations=N]]
       [--repo <path>] [--branch <name>] [--parallel]
 ```
@@ -372,7 +372,7 @@ skills/dreamteam/
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S50 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
+tests/scenarios.md    # S1–S52 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
 docs/VALIDATION.md    # the same scenarios as a one-line indexed list
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
@@ -381,7 +381,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 50 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, the run-level safety guardrails, and gate resilience. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
+The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 52 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, the run-level safety guardrails, gate resilience, and cost-proportional gating. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
 
 ## FAQ / Troubleshooting
 

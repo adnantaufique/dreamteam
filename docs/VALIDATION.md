@@ -76,6 +76,11 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S49** — a dispatched unit that errors or drops without returning is re-dispatched once at the same tier with the same brief (no tier bump on an infrastructure error), a reviewer dropped at the schema retry cap re-runs schema-free, a half-failed stage resumes via `resumeFromRunId` rather than re-running fresh, a dropped reviewer never counts as a pass, and every re-dispatch counts toward `max_total_dispatches`.
 - **S50** — a placeholder review ("Test.", a bare LGTM) is a reviewer error rather than a verdict: it earns one re-dispatch, never counts toward `min_pass`, its evidence-less finding never becomes a must-fix, and an admissible verdict must show its work — the verdict-level counterpart of S41's per-finding evidence rule.
 
+## Cost-proportional gating (S51–S52)
+
+- **S51** — with `risk_scaling` on (the default) the gate dispatches a risk-scaled reviewer subset per workstream (low → Reality Checker only, standard → plus the most relevant domain reviewer, high → the full panel; security in scope → `high` by the sensitive-surface heuristic), always keeping the Reality Checker and force-including any in-scope non-waivable reviewer, counting `min_pass` over the dispatched subset, printing the class in the re-anchor line (`risk off` when scaling is off or the panel pinned), and pinning the full panel under `off`, `--full-gate`, `--cost quality`, or an explicit roster — audit's own fan-out untouched.
+- **S52** — on platforms with an effort dial (Codex; Claude Code Workflow mode) a cheap-tier mechanical producer may run at low effort while reviewers never drop below the platform default; the dial complements the tier rubric rather than substituting for a tier drop, and the Agent-tool / background path simply has no dial, which is not an error.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].
