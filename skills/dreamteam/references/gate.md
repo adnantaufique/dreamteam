@@ -52,12 +52,15 @@ refuter pass (once, §above): refute predicted must-fixes → re-synthesize (§2
 iterations = 0
 while must-fixes remain and iterations < gate_policy.max_fix_iterations:
     dispatch the producer with the must-fix list
-    re-run the verifying reviewers on the changed output   # re-verify — don't assume the fix worked
+    re-run the verifying reviewers on the changed output — delta-scoped (§below)   # re-verify — don't assume the fix worked
     re-synthesize (§2)
     iterations += 1
 if must-fixes still remain:
     escalate to the human — never weaken the bar to force a pass
 ```
+
+**Delta-scoped re-verification.** The fix-iteration re-verify targets **(a)** confirming each must-fix is **actually resolved** and **(b)** the **fix's own diff** for regressions — **not a fresh full review of the whole workstream** (the economics: a fix round re-reviews the delta, not the world). **Guard — an expanding fix is fresh surface:** a fix that touches files **beyond the workstream's reviewed diff** (initially its original diff) is new, unreviewed output → the conductor **RE-CLASSIFIES over the expanded surface** — the `references/caster.md` heuristics re-applied: sensitive surface → `high`, any doubt → the higher class, and the non-waivable force-includes still fire — and the **expansion receives a FRESH REVIEW by the panel of its re-derived risk class** (§1; the risk-scaled subset, `references/caster.md`), **never mere re-verification**: a dispatch-time class is never frozen — a `low` workstream whose fix wanders into auth files re-derives `high`; scoping narrows the re-check of already-reviewed ground, never the review of new ground. **Once that review lands, the expansion's files JOIN the workstream's reviewed diff** — already-reviewed ground for later iterations, never fresh surface twice. Re-synthesis is **unchanged (§2)**: must-fix confirmation stays mandatory and the verdict still comes from §2.
+
 Report the final verdict, what was fixed, and **the evidence behind the pass**.
 
 Reviewers do not auto-escalate tiers (already capable); producer re-dispatch escalation is handled in `loop.md`.

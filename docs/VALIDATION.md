@@ -86,6 +86,12 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S53** — once per gate, before the first fix iteration only (never on needs-work, never inside later iterations), each must-fix that is a prediction gets one standard-tier refuter charged to run the check that settles it: hard refuting evidence drops the finding per evidence-beats-prediction, no evidence leaves it standing, an already-evidenced must-fix gets no refuter, and the refuter is an evidence-producer rather than a reviewer — the capable reviewer floor holds and its dispatches count toward the run cap.
 - **S54** — the report buffer carries a per-role dispatch-reliability tally (drops by failure class, recovery re-dispatches, schema-free re-runs, refuter outcomes) the retro's feedback reviewer can cite as run evidence for a learning; it is report output only, with no persisted store.
 
+## Dispatch efficiency (S55–S57)
+
+- **S55** — a fix iteration re-verifies the delta (must-fix confirmation plus the fix's own diff), never a fresh full review of the workstream, while a fix that expands beyond the reviewed diff is re-classified over the expanded surface and gets a fresh review by the panel of its re-derived risk class, with §2 re-synthesis unchanged.
+- **S56** — every post-cast dispatch brief opens with the byte-identical firewall-first fixed-order preamble of standing briefs (security occupying its slot only when cast) and all per-leaf content strictly after; no rule's content changes — the ordering rule costs nothing on platforms without prefix caching, and caching hits the shared prefix where supported.
+- **S57** — each dispatch hands the unit its working set (file paths, entry points, graph pointers when the graph is on); a leaf that must step outside it says so in its return, and a fundamentally wrong set escalates as NEEDS_CONTEXT with a same-tier re-dispatch.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].
