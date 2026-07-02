@@ -71,6 +71,11 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S47** — the `run_policy` caps are mechanical and on by default: excess concurrency serializes rather than fanning wider (8, ceiling 16), reaching the cumulative dispatch backstop (60) stops the run and escalates to a human, and a large projected fan-out (30) prints its cost and waits for confirmation even under auto.
 - **S48** — execution discipline: a producer watches each shell command to completion and reads its output before proceeding, uses a bounded poll for a backgrounded command, and never abandons the task in an open-ended wait state.
 
+## Gate resilience (S49–S50)
+
+- **S49** — a dispatched unit that errors or drops without returning is re-dispatched once at the same tier with the same brief (no tier bump on an infrastructure error), a reviewer dropped at the schema retry cap re-runs schema-free, a half-failed stage resumes via `resumeFromRunId` rather than re-running fresh, a dropped reviewer never counts as a pass, and every re-dispatch counts toward `max_total_dispatches`.
+- **S50** — a placeholder review ("Test.", a bare LGTM) is a reviewer error rather than a verdict: it earns one re-dispatch, never counts toward `min_pass`, its evidence-less finding never becomes a must-fix, and an admissible verdict must show its work — the verdict-level counterpart of S41's per-finding evidence rule.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].

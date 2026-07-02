@@ -372,7 +372,7 @@ skills/dreamteam/
     retro.md          # post-run learnings (Layer A)
     learnings.md      # the learnings store the Caster consults
     evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S48 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
+tests/scenarios.md    # S1–S50 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
 docs/VALIDATION.md    # the same scenarios as a one-line indexed list
 install.ps1 / install.sh                     # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md            # Gemini CLI packaging
@@ -381,7 +381,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 48 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, and the run-level safety guardrails. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
+The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 50 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, the run-level safety guardrails, and gate resilience. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
 
 ## FAQ / Troubleshooting
 
