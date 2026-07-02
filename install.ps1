@@ -50,12 +50,12 @@ foreach ($f in $bundledAgents) {
 if (Test-Path (Join-Path $root 'skills\mle-workflow\SKILL.md')) { Write-Output "    [ok bundled] mle-workflow (skill)" } else { Write-Output "    [ERROR] missing from bundle: skills\mle-workflow\SKILL.md"; $bundleErr++ }
 
 # 2) depended-on - install via README Step 1, or the opt-in installer below
-Write-Output "  depended-on (install via README Step 1, or the opt-in installer below):"
+Write-Output "  depended-on (superpowers + find-skills required via README Step 1; ui-ux-pro-max recommended):"
 foreach ($s in 'brainstorming','writing-plans','using-git-worktrees','verification-before-completion','finishing-a-development-branch') {
   if (Test-PluginSkill $s) { Write-Output "    [ok] superpowers:$s" } else { Write-Output "    [ ! ] superpowers:$s"; $depMissing++ }
 }
 if (Test-DepSkill 'find-skills')   { Write-Output "    [ok] find-skills" } else { Write-Output "    [ ! ] find-skills (needed for dynamic casting + the recommender)"; $depMissing++ }
-if (Test-DepSkill 'ui-ux-pro-max') { Write-Output "    [ok] ui-ux-pro-max" } else { Write-Output "    [ ! ] ui-ux-pro-max (needed for the ux-designer / design roles)"; $depMissing++ }
+if (Test-DepSkill 'ui-ux-pro-max') { Write-Output "    [ok] ui-ux-pro-max" } else { Write-Output "    [ ! ] ui-ux-pro-max (recommended - composed by the ux-designer / design roles when installed)"; $depMissing++ }
 
 # 3) optional - recommend-only; resolved or substituted at runtime
 Write-Output "  optional (recommend-only; resolved/substituted at runtime):"
@@ -66,21 +66,21 @@ Write-Output "    [built-in] Explore, general-purpose (host-resolved at runtime)
 
 Write-Output ""
 if ($bundleErr -gt 0) { Write-Output "warning: $bundleErr bundled file(s) missing from this checkout - re-clone/re-pull the plugin." }
-if ($depMissing -gt 0) { Write-Output "note: $depMissing depended-on item(s) missing - a warning, not an error; paths needing them stay dark until installed." }
-else { Write-Output "all depended-on dependencies present." }
+if ($depMissing -gt 0) { Write-Output "note: $depMissing depended-on/recommended item(s) missing - a warning, not an error; paths needing them stay dark until installed." }
+else { Write-Output "all depended-on and recommended dependencies present." }
 
 # --- opt-in dependency installer (strictly opt-in; default N; never auto-installs) ---
 Write-Output ""
-Write-Output "required-dependency install commands (registered; same as README Step 1):"
+Write-Output "dependency install commands (1-2 required, per README Step 1; 3 recommended for the ux-designer / design roles):"
 Write-Output "  1) claude plugin marketplace add obra/superpowers-marketplace && claude plugin install superpowers@superpowers-marketplace"
 Write-Output "  2) npx skills add vercel-labs/skills --skill find-skills"
 Write-Output "  3) claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill && claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill"
 
 $interactive = -not [Console]::IsInputRedirected
 if (($depMissing -gt 0) -and $interactive) {
-  $reply = Read-Host "Install the required dependencies now? [y/N]"
+  $reply = Read-Host "Install the missing dependencies now? [y/N]"
   if ($reply -eq 'y' -or $reply -eq 'Y') {
-    Write-Output "installing depended-on dependencies (no auto-confirm flags)..."
+    Write-Output "installing missing dependencies (no auto-confirm flags)..."
     if (Get-Command claude -ErrorAction SilentlyContinue) {
       claude plugin marketplace add obra/superpowers-marketplace
       if ($LASTEXITCODE -eq 0) { claude plugin install superpowers@superpowers-marketplace }

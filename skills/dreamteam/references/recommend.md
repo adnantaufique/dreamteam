@@ -32,7 +32,7 @@ The provenance of dreamteam's bundled and depended-on components. When a profile
 | ECC (affaan-m) | MIT | vendored subset — recommend extra reviewers/resolvers/skills/commands | `/plugin marketplace add https://github.com/affaan-m/ECC` then `/plugin install ecc@ecc` | `npx ecc-install --profile minimal --target <platform>` |
 | SuperClaude (SuperClaude-Org) | MIT | vendored subset — recommend the broader `sc:*` agent/command suite | `pipx install SuperClaude && SuperClaude install` | Gemini: `pipx install SuperGemini && SuperGemini install` · Codex: `pipx install SuperCodex && SuperCodex install` |
 | superpowers (obra) | MIT | depended-on — recommend to install the 5 sub-skills + `systematic-debugging` | `/plugin marketplace add obra/superpowers-marketplace` then `/plugin install superpowers@superpowers-marketplace` | per superpowers docs (manual skill sync) |
-| ui-ux-pro-max (nextlevelbuilder) | MIT | depended-on — recommend to install for the `ux-designer` + design roles | `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill` then `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill` | `npm install -g ui-ux-pro-max-cli && uipro init --ai claude` |
+| ui-ux-pro-max (nextlevelbuilder) | MIT | recommended — install for the `ux-designer` + design roles | `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill` then `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill` | `npm install -g ui-ux-pro-max-cli && uipro init --ai claude` |
 
 The sixth source, **graphify** (safishamsi, MIT), is registered in its own section below — recommend-only, never vendored.
 

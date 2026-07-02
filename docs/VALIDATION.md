@@ -53,7 +53,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S35** — in a graphify-backed audit the graph is built once at fan-out, is the substrate for `map` and navigation-only for `bugs` (findings still reproduced against live source), and the report still ships when it is absent.
 - **S36** — all six component upstreams surface with real commands carrying no `-y`, each labelled by role, with the Claude-only `/plugin` form falling back to git/npx/pip off-Claude; the Caster recommends, never installs.
 - **S37** — the retro stamps each learning with a project_key (git-remote hash) and a numeric confidence (0.3–0.9), and the Caster consults only global plus current-project entries, weighted by that confidence.
-- **S38** — the installer prints the registered install commands and prompts (default N) only when a depended-on item is missing and the shell is interactive; it never auto-installs, and bundled agents are never in the prompt set.
+- **S38** — the installer prints the registered install commands and prompts (default N) only when a required or recommended item is missing and the shell is interactive; it never auto-installs, and bundled agents are never in the prompt set.
 - **S39** — the published marketplace path and the install.sh / install.ps1 manual fallback land the same bundle, and the README notes the marketplace is public but not yet client-tested.
 - **S40** — dreamteam loads as a native OpenCode skill (auto-read from `~/.claude/skills`, or synced to `~/.config/opencode/skills`), dispatches via the task tool with provider-agnostic tiers, and runs background-only with no Workflow tool.
 

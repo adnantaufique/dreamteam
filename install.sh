@@ -54,12 +54,12 @@ done
 if [ -f "$root/skills/mle-workflow/SKILL.md" ]; then echo "    [ok bundled] mle-workflow (skill)"; else echo "    [ERROR] missing from bundle: skills/mle-workflow/SKILL.md"; bundle_err=$((bundle_err+1)); fi
 
 # 2) depended-on - install via README Step 1, or the opt-in installer below
-echo "  depended-on (install via README Step 1, or the opt-in installer below):"
+echo "  depended-on (superpowers + find-skills required via README Step 1; ui-ux-pro-max recommended):"
 for s in brainstorming writing-plans using-git-worktrees verification-before-completion finishing-a-development-branch; do
   if have_plugin_skill "$s"; then echo "    [ok] superpowers:$s"; else echo "    [ ! ] superpowers:$s"; dep_missing=$((dep_missing+1)); fi
 done
 if have_dep_skill find-skills;   then echo "    [ok] find-skills"; else echo "    [ ! ] find-skills (needed for dynamic casting + the recommender)"; dep_missing=$((dep_missing+1)); fi
-if have_dep_skill ui-ux-pro-max; then echo "    [ok] ui-ux-pro-max"; else echo "    [ ! ] ui-ux-pro-max (needed for the ux-designer / design roles)"; dep_missing=$((dep_missing+1)); fi
+if have_dep_skill ui-ux-pro-max; then echo "    [ok] ui-ux-pro-max"; else echo "    [ ! ] ui-ux-pro-max (recommended - composed by the ux-designer / design roles when installed)"; dep_missing=$((dep_missing+1)); fi
 
 # 3) optional - recommend-only; resolved or substituted at runtime
 echo "  optional (recommend-only; resolved/substituted at runtime):"
@@ -73,24 +73,24 @@ if [ "$bundle_err" -gt 0 ]; then
   echo "warning: $bundle_err bundled file(s) missing from this checkout - re-clone/re-pull the plugin."
 fi
 if [ "$dep_missing" -gt 0 ]; then
-  echo "note: $dep_missing depended-on item(s) missing - a warning, not an error; paths needing them stay dark until installed."
+  echo "note: $dep_missing depended-on/recommended item(s) missing - a warning, not an error; paths needing them stay dark until installed."
 else
-  echo "all depended-on dependencies present."
+  echo "all depended-on and recommended dependencies present."
 fi
 
 # --- opt-in dependency installer (strictly opt-in; default N; never auto-installs) ---
 echo ""
-echo "required-dependency install commands (registered; same as README Step 1):"
+echo "dependency install commands (1-2 required, per README Step 1; 3 recommended for the ux-designer / design roles):"
 echo "  1) claude plugin marketplace add obra/superpowers-marketplace && claude plugin install superpowers@superpowers-marketplace"
 echo "  2) npx skills add vercel-labs/skills --skill find-skills"
 echo "  3) claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill && claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill"
 
 if [ "$dep_missing" -gt 0 ] && [ -t 0 ]; then
-  printf "Install the required dependencies now? [y/N] "
+  printf "Install the missing dependencies now? [y/N] "
   read -r reply || reply=""
   case "$reply" in
     y|Y)
-      echo "installing depended-on dependencies (no auto-confirm flags)..."
+      echo "installing missing dependencies (no auto-confirm flags)..."
       if command -v claude >/dev/null 2>&1; then
         claude plugin marketplace add obra/superpowers-marketplace \
           && claude plugin install superpowers@superpowers-marketplace \

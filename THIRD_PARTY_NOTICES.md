@@ -36,9 +36,10 @@ bodies.
 
 ## Intentionally not listed here
 
-- **superpowers** (Copyright (c) 2025 Jesse Vincent, MIT) and **ui-ux-pro-max**
-  (Copyright (c) 2024 Next Level Builder, MIT) are **depended-on** (installed via
-  the opt-in installer), not redistributed -> no notices entry, no fork drift.
+- **superpowers** (Copyright (c) 2025 Jesse Vincent, MIT) is **depended-on**;
+  **ui-ux-pro-max** (Copyright (c) 2024 Next Level Builder, MIT) is
+  **recommended** (both installed via the opt-in installer), not redistributed
+  -> no notices entry, no fork drift.
 - **graphify** (Copyright (c) 2026 Safi Shamsi, MIT) is **recommend-only** (an
   external tool, never vendored) -> no notices entry.
 - **gstack** (Copyright (c) Garry Tan, `garrytan/gstack`, MIT) is **methodology-only**:
