@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-3fb950" alt="version">
+  <img src="https://img.shields.io/badge/version-1.1.0-3fb950" alt="version">
   <img src="https://img.shields.io/badge/license-Apache_2.0-blue" alt="license">
   <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale_·_OpenCode-30363d" alt="platforms">
   <img src="https://img.shields.io/badge/Claude_Code-plugin-1f6feb" alt="Claude Code plugin">
@@ -11,9 +11,23 @@
 
 <p align="center"><b>AI agents say "done" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.</b></p>
 
-<p align="center"><i>Minimal by design, too: the least code that actually works, without dropping validation or security to get there.</i></p>
+<p align="center"><i>Minimal in both directions: dreamteam itself is one skill, not a platform — and its producers ship the least code that fully works, never by cutting validation or security.</i></p>
 
-## Try it (one command)
+<p align="center">
+  <a href="#try-it">Try it</a> ·
+  <a href="#why-dreamteam">Why</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#quickstart">Quickstart</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#what-a-run-looks-like">Demo</a> ·
+  <a href="#cost--scale">Cost</a> ·
+  <a href="#profiles-seed-set">Profiles</a> ·
+  <a href="#mechanics--reference">Reference</a> ·
+  <a href="#dependencies">Dependencies</a> ·
+  <a href="#faq--troubleshooting">FAQ</a>
+</p>
+
+## Try it
 
 After [install](#install), point it at your repo in read-only mode:
 
@@ -21,7 +35,7 @@ After [install](#install), point it at your repo in read-only mode:
 /dreamteam --profile audit "find bugs in this repo"
 ```
 
-It assembles a review crew, reproduces every finding against your real code, and prints a report. Nothing is written to your tree.
+It assembles a review crew, reproduces every finding against your real code, and prints a report — the read-only `audit` profile's only artifact ([Safety guardrails](#safety-guardrails) is honest about what enforces that). It fans out parallel specialists, so check [Cost & scale](#cost--scale) before an exhaustive (`--depth exhaustive`) audit.
 
 ## What it does
 
@@ -31,99 +45,83 @@ It assembles a review crew, reproduces every finding against your real code, and
 
 ## Why dreamteam?
 
-Most agent tools hand a task to a model and trust whatever comes back. The model reports that the tests pass; sometimes they don't, or the passing test never actually ran the code under it. dreamteam is built for that gap. Everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken version gets rejected, not trusted.
+Most agent tools hand a task to a model and trust whatever comes back: the model reports passing tests, and sometimes they don't pass — or the passing test never ran the code under it. dreamteam is built for that gap: everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken implementation is rejected, not trusted.
 
-It is also deliberately small. dreamteam is one skill you invoke per task, not a framework you build against or a platform you install and live in. The same loop handles builds, audits, research, and QA, and it runs on Claude Code, Codex, Gemini, CodeWhale, and OpenCode rather than a single runtime.
-
-The project people most often reach for as a comparison is ECC, and the honest answer is that it is a different category. ECC is an always-on operator layer with dozens of agents, a large skill library, persistent memory, and learning that runs in the background. It is broader and deeper than dreamteam. dreamteam learns too. A post-run retro writes evidence-tagged learnings the Caster consults on later runs of the same project, and anything that would change the skill itself is proposed for you to approve rather than applied on its own. For ai-research, `--evolve` adds an opt-in benchmark-evolution loop. So the difference from ECC is the shape of that learning, not whether it happens. ECC's runs unprompted and platform-wide; dreamteam's stays inside one skill and one project, and never rewrites itself without your sign-off. The one thing it will not trade away is the honesty gate.[^prior-art]
-
-<details>
-<summary>How it compares to plain dispatch and to agent frameworks</summary>
+It is also deliberately small — one skill you invoke per task, not a framework you build against or a platform you live in, running on five CLIs rather than one runtime. The nearest comparison, [ECC](https://github.com/affaan-m/ECC), is honestly a different category: an always-on operator layer, broader and deeper than dreamteam — whereas dreamteam stays a per-task skill whose learning is confined to your project and never rewrites the skill without your sign-off.[^prior-art]
 
 | | Dispatches work | Gates the result | No framework to build | Cross-CLI |
 |---|:---:|:---:|:---:|:---:|
 | Plain subagent dispatch / Task tool | ✓ | — | ✓ | — |
 | CrewAI · AutoGen · LangGraph | ✓ | partial (you wire it) | — | — |
-| **dreamteam** | **✓** | **✓ (mandatory + mutation-checked)** | **✓** | **✓** |
-
-</details>
+| **dreamteam** | **✓** | **✓ (mandatory, vacuity-checked)** | **✓** | **✓** |
 
 ## Install
 
-**Prerequisites**
+**Prerequisites:** a supported CLI (Claude Code, Codex, Gemini, CodeWhale, or OpenCode); a git repo for build-type runs (work happens in isolated git worktrees); paid model-API usage — a run spawns several agents ([Cost & scale](#cost--scale)).
 
-- a supported CLI: Claude Code, Codex, Gemini, CodeWhale, or OpenCode
-- a git repo for build-type runs, where work happens in isolated git worktrees
-- paid model-API usage, since a run spawns several agents (see [Cost & scale](#cost--scale))
+Three steps; install commands live here, and other sections link back.
 
-Three steps. These are the only install commands in this README; everything else links back here.
+**Step 1. Install the two required dependencies.** dreamteam composes existing skills rather than reinventing them.
 
-**Step 1. Install the two required dependencies.** dreamteam composes existing skills rather than reinventing them, and it needs both of these.
+In Claude Code:
 
 ```
-/plugin marketplace add obra/superpowers-marketplace && /plugin install superpowers@superpowers-marketplace
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+```
+
+In a terminal:
+
+```
 npx skills add vercel-labs/skills --skill find-skills
 ```
 
-- **superpowers** is a Claude Code plugin. It provides `brainstorming`, `writing-plans`, `using-git-worktrees`, `verification-before-completion`, and `finishing-a-development-branch` ([github.com/obra/superpowers](https://github.com/obra/superpowers)).
-- **find-skills** is a skill from the Vercel `skills` CLI ([skills.sh](https://www.skills.sh)). It discovers and installs other skills, and it backs the advisory recommender ([github.com/vercel-labs/skills](https://github.com/vercel-labs/skills)).
+- **superpowers** provides `brainstorming`, `writing-plans`, `using-git-worktrees`, `verification-before-completion`, and `finishing-a-development-branch` ([github.com/obra/superpowers](https://github.com/obra/superpowers)).
+- **find-skills**, from the Vercel `skills` CLI ([skills.sh](https://www.skills.sh) · [github.com/vercel-labs/skills](https://github.com/vercel-labs/skills)), discovers and installs other skills and backs the advisory recommender.
 
-A missing dependency warns but never blocks. dreamteam substitutes or flags it at runtime. The catch is that any path needing it stays dark until you install it. The `ai-research` profile pulls in a few more optional skills; [Dependencies](#dependencies) has the full list.
+A missing dependency warns but never blocks — dreamteam substitutes or flags it at runtime — but any path needing it stays dark until installed. The check also lists a third, **recommended** item, `ui-ux-pro-max` (composed by the `ux-designer` / design roles); [Dependencies](#dependencies) has the full picture, including the optional `ai-research` skills.
 
-**Step 2. Install dreamteam.** Clone this repo, then run the installer for your OS from its root. It publishes `skills/dreamteam/` to `~/.claude/skills/dreamteam/` and runs the dependency check.
+**Step 2. Install dreamteam.** Clone this repo and run the installer for your OS from its root; it publishes `skills/dreamteam/` to `~/.claude/skills/dreamteam/` and runs the dependency check. A skill-only install registers none of the 21 vendored agents (the bundled specialist crew in `vendor/`) — [Dependencies](#dependencies) covers how the crew resolves then.
 
 ```
 bash ./install.sh       # Linux / macOS
 pwsh ./install.ps1      # Windows
 ```
 
-**Step 3. Invoke it** with `/dreamteam`. See [Quickstart](#quickstart) and [Mechanics / Reference](#mechanics--reference) for the invocation shapes.
+**Step 3. Invoke it** with `/dreamteam` — see [Quickstart](#quickstart).
 
 <details>
 <summary><b>Other CLIs &amp; the published-plugin install</b></summary>
 
-dreamteam also installs as a Claude Code plugin marketplace:
+dreamteam also installs as a Claude Code plugin marketplace — the one path that registers the 21 vendored agents and auto-wires the enforcement hook (inert until armed, per [Safety guardrails](#safety-guardrails)):
 
 ```
 /plugin marketplace add adnantaufique/dreamteam
 /plugin install dreamteam@dreamteam-marketplace
 ```
 
-*(Available now that the repo is public, though it hasn't been tested from a client yet. If the marketplace command doesn't resolve in your client, the `install.sh` / `install.ps1` path above always works.)*
+*(Available now that the repo is public but untested from a client yet; if it doesn't resolve, `install.sh` / `install.ps1` always works.)*
 
-**Other CLIs.** The skill is CLI-agnostic. Tool names, dispatch, and model tiers resolve per `skills/dreamteam/references/platforms.md`:
-
-| CLI | Sync | Installs to |
-|----|------|-------------|
-| Codex | `scripts/sync-to-codex.sh` | `~/.agents/skills/dreamteam/` (+ `AGENTS.md` pointer) |
-| Gemini | `scripts/sync-to-gemini.sh` (+ `gemini-extension.json`) | `~/.gemini/agents/dreamteam/` |
-| CodeWhale | `scripts/sync-to-codewhale.sh` | `~/.codewhale/skills/dreamteam/` (load via `/skills`) |
-| OpenCode | `scripts/sync-to-opencode.sh` | `~/.config/opencode/skills/dreamteam/` (native `skill` tool; also auto-read from `~/.claude/skills/`) |
-
-(`.ps1` variants exist for each on Windows.)
-
-OpenCode is a special case: it natively reads `~/.claude/skills`, so the [Step 2](#install) `install.sh` / `install.ps1` already makes dreamteam available there with no sync step. The `sync-to-opencode` script is only for OpenCode-only setups that haven't run the Claude installer.
+**Other CLIs.** The skill is CLI-agnostic — tool names, dispatch, and model tiers resolve per `skills/dreamteam/references/platforms.md`. Sync scripts (each has a `.ps1` twin for Windows): `sync-to-codex` → `~/.agents/skills/dreamteam/` (+ an `AGENTS.md` pointer); `sync-to-gemini` (+ `gemini-extension.json`) → `~/.gemini/agents/dreamteam/`; `sync-to-codewhale` → `~/.codewhale/skills/dreamteam/` (load via `/skills`); `sync-to-opencode` → `~/.config/opencode/skills/dreamteam/` (native `skill` tool). OpenCode also natively reads `~/.claude/skills`, so Step 2 alone covers it — its sync script is only for setups that never ran the Claude installer.
 
 </details>
 
 ## Quickstart
 
-With [Install](#install) done, point dreamteam at a task or an approved plan:
+With [Install](#install) done, point dreamteam at a task or an approved plan — the slash command is shorthand, and plain language ("use dreamteam to add OAuth login") runs the same gated loop:
 
 ```
 /dreamteam "add OAuth login to our web app"           # auto-picks the web crew, runs the gated loop
 /dreamteam docs/plans/my-plan.md                      # execute an already-approved plan
 ```
 
-> You don't have to use the slash command. You can also ask your session agent in plain language, like "use dreamteam to add OAuth login," and it runs the same gated loop. The `/dreamteam` command is shorthand for that.
+> **Opt-in, then session-sticky:** nothing runs until you invoke dreamteam — but once invoked, later artifact-producing tasks in the same session route through it too. Say **"don't use dreamteam for this"** to skip one task, or **"stop using dreamteam this session"** to turn it off (a later `/dreamteam` re-arms it).
 
-> The first example uses the `superpowers` sub-skills and `find-skills`. If they aren't installed, the dependency check prints `[ ! ]` warnings and those paths won't fire. See [Install → Step 1](#install).
-
-> **Opt-in:** dreamteam runs multi-agent orchestration only when you invoke it.
+**Not for:** a single-step task one agent handles, trivial edits, or work you haven't asked to orchestrate.
 
 ## How it works
 
-One loop, `produce → gate → fix → integrate`, runs across every domain. Only the crew changes.
+One loop, `produce → gate → fix → integrate`, runs across every domain. A **workstream** is one independently produced, independently reviewed slice of the task (a plan usually splits into several); the **gate** is the review panel every workstream must pass.
 
 ```mermaid
 flowchart LR
@@ -136,35 +134,38 @@ flowchart LR
   I --> R["report"]
 ```
 
-Three parts do the work, glossed on first use:
+Three parts do the work:
 
-- **conductor** — the loop you talk to. It dispatches work to specialist agents and reports each verdict. It never writes code itself.
-- **Caster** — the selector. It reads your task, picks the crew, and gives each role a cost-aware model tier. The crew prints before any work runs.
-- **Reality Checker** — the always-on reviewer. It re-runs the build and tests (or checks data against the claim for research) and rejects anything it can't verify.
+- **conductor** — the loop you talk to: dispatches specialists, reports each verdict, never writes code itself.
+- **Caster** — the selector: picks the crew and gives each role a cost-aware model **tier** (`cheap → standard → capable → max`, resolved to a concrete model per platform).
+- **Reality Checker** — the always-on reviewer: re-runs the build and tests (data↔claim for research) and rejects anything it can't verify.
 
-The three stages in detail:
+The three stages:
 
-1. **Caster resolves the crew.** An explicit `--roster/--profile/--skills` wins. Failing that, a confident profile match takes the fast path. Failing that, a Caster agent reads the live agent registry and `find-skills` and returns a crew manifest. The crew prints before the run, with a one-line rationale per pick.
-2. **The loop runs per workstream** (`references/loop.md`): produce, gate, fix, integrate, report. Independent workstreams run concurrently, each file-mutating producer in its own git worktree. A mandatory per-workstream re-anchor keeps the conductor dispatching instead of coding inline.
-3. **The gate checks the work** (`references/gate.md`). A reviewer panel runs in parallel, split between static review and verification. The Reality Checker is always on the panel: it matches claims against evidence (tests for code, data against claim for research) and rejects faked or over-claimed coverage. A mutation check sharpens this further. A passing test has to go red on a broken implementation, and mocks can't stand in for the unit under test. Findings synthesize into `pass`, `fix-then-pass`, or `needs-work`, and the fix loop is capped.
+1. **Caster resolves the crew.** Explicit `--roster/--profile/--skills` wins; else a confident profile match takes the fast path; else a Caster agent reads the live agent registry and `find-skills`. The manifest prints before the run, one rationale line per pick.
+2. **The loop runs per workstream** (`references/loop.md`): produce, gate, fix, integrate, report. Independent workstreams run concurrently, each file-mutating producer in its own git worktree; a mandatory re-anchor keeps the conductor dispatching instead of coding inline.
+3. **The gate checks the work** (`references/gate.md`). A reviewer panel runs in parallel, split between static review and verification, and rejects faked or over-claimed coverage: a passing test is checked for vacuity — reasoned about always, perturbed to confirm it goes red on a broken implementation when cheap — and mocks can't stand in for the unit under test. Findings synthesize into `pass`, `fix-then-pass`, or `needs-work`; the fix loop is capped.
 
-<details>
-<summary>Three design pillars</summary>
-
-- **correct.** Every workstream passes a verification gate. The Reality Checker sits on every panel, matches claims against evidence (tests for code, data against claim for research), and throws out faked or over-claimed coverage.
-- **versatile.** One loop, a swappable crew. The same machinery handles builds, audits, research, and QA. Only the crew changes.
-- **minimal.** The least code that fully works, without cutting validation or security to get there.
-
-</details>
-
-The deterministic edge cases live in [Mechanics / Reference](#mechanics--reference): the recommendation system, the `audit` profile, model-tier escalation, cross-platform resolution, learning and evolution, the raw-idea wrapper, and the full flag grammar.
+The deterministic edge cases — recommendations, `audit`, tier escalation, platforms, learning, the raw-idea wrapper, the flag grammar — live in [Mechanics / Reference](#mechanics--reference) below.
 
 ## What a run looks like
 
-A run prints the crew manifest first. Then it drives each workstream through produce → gate → fix → integrate and reports every verdict with the evidence behind it. Here's an abbreviated transcript for `/dreamteam "add OAuth login to our web app"`:
+A run prints the crew manifest, then reports every workstream verdict with its evidence. Two moments from the transcript below (`/dreamteam "add OAuth login to our web app"`) show the point — the gate rejecting a green-but-fake test:
+
+```text
+Reality Checker  ✗ HIGH: refresh-token test is vacuous — still green when verify_signature()
+                   is stubbed to return True (mock stands in for the unit under test)
+```
+
+…and the pass landing only after the fix survives perturbation:
+
+```text
+re-verify → Reality Checker ✓ : perturbed verify_signature() → suite goes RED as expected
+verdict: PASS · evidence: 17 unit + 4 integration green, non-vacuous (mutation-confirmed)
+```
 
 <details>
-<summary>Annotated run transcript</summary>
+<summary><b>Full annotated transcript</b> — the crew manifest, the vacuous-test rejection, a CSRF must-fix, and a tier escalation on a BLOCKED producer</summary>
 
 ```text
 $ /dreamteam "add OAuth login to our web app"
@@ -213,74 +214,58 @@ Retro → learning persisted: "web+auth → add Security Engineer by default; as
 
 </details>
 
-Every line is a real format from the skill: the manifest (`references/caster.md`), the per-workstream re-anchor and escalation lines (`references/loop.md`), and the `pass / fix-then-pass / needs-work` verdict with its evidence (`references/gate.md`).
+Every line is a real format from the skill: the manifest (`references/caster.md`), the re-anchor and escalation lines (`references/loop.md`), the verdict and its evidence (`references/gate.md`).
 
 ## Cost & scale
 
-A run is not a single prompt. A typical task spawns the Caster, a planner, one producer per workstream, a reviewer panel (the Reality Checker plus any domain reviewers, all at the `capable` tier), any fix-loop re-dispatches, and a post-run retro.
+A run is not a single prompt: a typical task spawns the Caster, a planner, one producer per workstream, a reviewer panel (the Reality Checker plus any domain reviewers, all `capable`), fix-loop re-dispatches, and a post-run retro — roughly N times one prompt's tokens, minutes rather than seconds, a handful to about a dozen dispatches (more for `--profile audit --depth exhaustive`, which is budget-printed and confirm-gated). Counting the transcript above: 12 dispatches — four producer runs (two initial, one fix re-dispatch, one tier escalation), seven reviewer runs (a three-reviewer panel, two re-verifies, WS2's two-reviewer gate), and the retro; the crew came via the profile fast path, so no Caster-agent dispatch; and no planner dispatch either — the printed manifest casts `planner : writing-plans (skill)`, a composed skill, not a dispatched agent (`references/caster.md`: a skill-planner carries no tier and is never dispatched). Beyond that, measure your own runs rather than trusting a made-up figure.
 
-So expect roughly N times the tokens and cost of one prompt, and minutes of wall-clock rather than seconds. In practice that's a handful to about a dozen agent dispatches, more for `--profile audit --depth exhaustive` (which is budget-printed and confirm-gated). The numbers depend on the task, so measure your own runs rather than trusting a made-up figure.
+Reviewers never drop below `capable`, so they're the largest steady cost — but the gate is risk-proportional by default: a low-risk workstream gets the Reality Checker alone, only a high-risk one the full panel (`--full-gate`, `--cost quality`, or an explicit roster pins it everywhere). To economize:
 
-Reviewers never drop below `capable`, so they're the largest steady cost — but the gate is risk-proportional by default: a low-risk workstream is verified by the Reality Checker alone and only a high-risk one gets the full panel, so panel size scales with the workstream (`--full-gate`, `--cost quality`, or an explicit roster pins the full panel). To economize:
-
-- dispatch always runs in the background, so it doesn't tie up your session
-- `--cost cheap` biases producers to the cheapest tier that fits; reviewers stay `capable`
-- `--autonomy confirm` gates spend by confirming the crew and each verdict before work proceeds
+- dispatch runs in the background, so it doesn't tie up your session (OpenCode excepted — [Invocation shapes](#invocation-shapes))
+- `--cost cheap` biases producers to the cheapest tier that fits
+- `--autonomy confirm` gates spend by confirming the crew and each verdict
 - `--depth shallow|module` and a tighter task keep fan-out small
 
-Those are the knobs you turn. A run also carries caps you don't set: a concurrency ceiling, a cumulative dispatch backstop that stops and escalates if a run runs away, and a confirm-gate that prints the projected cost before a large fan-out, even under `--autonomy auto`. In Workflow mode a user token target is honored too: the conductor treats the harness's live remaining budget as a run ceiling and meets it by scheduling — serializing work, then shrinking the remaining fan-out, then stopping and escalating — never by thinning the review gate. See [Safety guardrails](#safety-guardrails).
+Default-on caps ride underneath; [Safety guardrails](#safety-guardrails) specifies them.
 
 ## Profiles (seed set)
-
-<details>
-<summary>Crew rosters per profile (producers · gate · workstream strategy)</summary>
 
 | Profile | Producers | Gate | Workstreams |
 |---|---|---|---|
 | **mobile-dev** | Mobile App Builder (iOS · Android · cross-platform) · UI Designer *(Caster may re-add a design-architect for complex mobile)* | Code Reviewer, Reality Checker | sequential |
 | **web** | Backend Architect · Frontend Developer · UI Designer | Code Reviewer, Reality Checker (+ Security Engineer if auth/payments) | sequential |
-| **ai-research** | *expand:* deep-research-agent + AI Engineer · *polish:* AI Engineer / Technical Writer | methodology reviewer, Reality Checker | **parallel** (expand ∥ polish) |
+| **ai-research** | *expand* (grow the research): deep-research-agent + AI Engineer · *polish* (write it up): AI Engineer / Technical Writer | methodology reviewer, Reality Checker | **parallel** (expand and polish side by side) |
 | **devops** | DevOps Automator | Reality Checker, Security Engineer | sequential |
 | **qa** | quality-engineer + Test Results Analyzer | Reality Checker | sequential |
-| **audit** *(read-only)* | dimension specialists as producers — *bugs:* Code Reviewer · Security Engineer · Performance Benchmarker · root-cause-analyst · *map:* Explore · Software Architect + synthesizer | Reality Checker (+ dimension specialists as verifiers) | **parallel** |
-| **ml-dev** | AI Engineer / python-expert · build-error-resolver (training/CUDA build-fix) *(ML development, distinct from ai-research)* | methodology reviewer, Reality Checker (+ Security Engineer if infra/data-sensitive) | sequential |
+| **audit** *(read-only)* | dimension specialists as producers — *bugs:* Code Reviewer · Security Engineer · Performance Benchmarker · root-cause-analyst · *map:* Explore · Software Architect · system-architect + a synthesizer | Reality Checker (+ dimension specialists as verifiers) | **parallel** |
+| **ml-dev** | AI Engineer / python-expert · build-error-resolver / pytorch-build-resolver (training/CUDA build-fix) *(ML development, distinct from ai-research)* | methodology reviewer, Reality Checker (+ Security Engineer if infra/data-sensitive) | sequential |
 | **debug** | root-cause-analyst (investigate) · host code producer (fix) *(reproduce-first; skips plan-writing, but lands the fix)* | Reality Checker (reproduce-then-resolve: RED before / GREEN after + a regression test), Code Reviewer | sequential |
 | **ux-designer** | UI Designer (+ ui-ux-pro-max) · deep-research-agent (redesign) · Frontend Developer (if code emitted) *(design-led; a11y non-waivable)* | a UX/design reviewer, an accessibility reviewer, Reality Checker (re-derives a11y evidence) (+ Code Reviewer if code emitted) | sequential |
-| **tutor** | deep-research-agent (understand) · Technical Writer (explain) *(understand anything, then explain it simply)* | Reality Checker (explanation↔source; source wins), a clarity reviewer | sequential |
+| **tutor** | deep-research-agent (understand) · Technical Writer (explain) | Reality Checker (explanation↔source; source wins), a clarity reviewer | sequential |
 | **generic** | general-purpose | Code Reviewer, Reality Checker | sequential |
 
-</details>
-
-`--profile android` still works as a back-compat alias for `mobile-dev`. The `audit` profile is read-only: the report is the artifact, and nothing lands in the audited tree (see [Mechanics / Reference](#mechanics--reference)). When `graphify` is installed, the `audit` profile is also graph-backed: the Caster builds an AST code-graph once at fan-out as navigation infra. The graph never decides a verdict, so the gate still reproduces every finding against live code. Each role carries a default model tier. For anything richer or cross-domain, the Caster agent reasons over the live registry, so a security- or architecture-sensitive producer can be cast above its profile default when it sits on the critical path. The OAuth backend in the transcript above is one example, bumped from `standard` to `capable`. Rosters are only defaults; override them with `--roster`.
+- `--profile android` is a back-compat alias for `mobile-dev`. `audit` is read-only: the report is the artifact, nothing lands in the audited tree, `integrate` is a no-op ([Audit and review](#audit-and-review)).
+- `Software Architect` and `system-architect` in the `audit` row are two distinct bundled agents (agency-agents and SuperClaude); map mode casts both.
+- Rosters and tiers are defaults: `--roster` overrides, and anything richer goes to the Caster agent over the live registry — a security- or architecture-sensitive producer on the critical path can be cast above its default, as the transcript's OAuth backend was (`standard` → `capable`).
+- With `graphify` installed, `audit` is graph-backed: an AST code-graph built once at fan-out as navigation infra. The graph never decides a verdict — the gate still reproduces every finding against live code.
 
 ## Mechanics / Reference
 
-The core is the loop above. These are the flags and the deterministic edge cases behind it.
+The flags and the deterministic edge cases behind the loop.
 
 ### Invocation shapes
 
-Beyond the [Quickstart](#quickstart) examples:
-
-`--profile ai-research` splits a run into parallel workstreams in isolated worktrees:
+Beyond [Quickstart](#quickstart): `--profile ai-research` splits a run into parallel workstreams in isolated worktrees; `--execution` pre-sets how a run executes, skipping the one-time prompt:
 
 ```
-/dreamteam --profile ai-research "salvage the leakage finding: expand ∥ polish"
+/dreamteam --profile ai-research "reproduce the paper's ablation and extend it to two more datasets"
+/dreamteam --execution workflow "add OAuth login to our web app"    # the Workflow tool (Claude Code only)
+/dreamteam --execution background "find bugs in this repo"          # background subagents (default, every CLI)
+/dreamteam --cost cheap --autonomy confirm "…"                      # economize + gate every verdict
 ```
 
-`--execution` pre-sets how a run executes, so dreamteam skips the one-time prompt:
-
-```
-/dreamteam --execution workflow "add OAuth login to our web app"   # orchestrate via the Workflow tool (Claude Code)
-/dreamteam --execution background "find bugs in this repo"          # multiple background subagents
-```
-
-Both modes run without tying up your session. Background subagents are the default and run on every CLI. The Workflow tool is Claude-Code-only, and it fits a run with many independent workstreams. With no flag, dreamteam asks once per session and defaults to background. `--execution workflow` on Codex, Gemini, CodeWhale, or OpenCode is invalid, since none of them has a Workflow tool, so the run falls back to background subagents.
-
-Economize by combining the cost and autonomy flags:
-
-```
-/dreamteam --cost cheap --autonomy confirm "…"       # economize + gate every verdict
-```
+Neither execution mode ties up your session, except OpenCode: its native dispatch is synchronous in core, so a run blocks the chat unless you add a community background plugin (`references/platforms.md`) — the dispatch → gate → integrate contract holds either way. The Workflow tool suits many independent workstreams; `--execution workflow` on the other four CLIs is invalid and falls back to background subagents. With no flag, dreamteam asks once per session, defaulting to background.
 
 ### Full flag grammar
 
@@ -297,127 +282,109 @@ Economize by combining the cost and autonomy flags:
 
 ### Selection and cost
 
-- **Cost-aware model tiers.** The Caster gives each role the cheapest tier that fits. The abstract scale is `cheap → standard → capable → max`, resolved to a concrete model per platform (`references/platforms.md`). Reviewers stay `capable`, and the loop escalates a tier on a gate failure or a BLOCKED producer. Tune it with `--cost` and `--models`.
-- **Cross-platform.** Runs on Claude Code, Codex, Gemini, CodeWhale, and OpenCode. `--platform` auto-detects the host.
-- **Recommendation system** (`references/recommend.md`). When a best-fit skill isn't installed, the Caster surfaces an advisory recommendation from skills.sh (via `find-skills`) plus the awesome-claude-code `THE_RESOURCES_TABLE.csv`. Discovery in, advice out. It recommends but doesn't install. An opt-in, human-gated `setup` role can install one approved, pinned candidate, and the gate checks the installed identity and that the command carried no auto-confirm flag.
+- **Cost-aware tiers.** Each role gets the cheapest tier that fits (`references/platforms.md` maps tiers to concrete models); reviewers stay `capable`; the loop escalates a tier on a gate failure or a BLOCKED producer. Tune with `--cost` / `--models`.
+- **Cross-platform.** All five CLIs; `--platform` auto-detects the host.
+- **Recommendations** (`references/recommend.md`). When a best-fit skill isn't installed, the Caster surfaces advice from skills.sh (via `find-skills`) plus the awesome-claude-code `THE_RESOURCES_TABLE.csv` — it recommends, never installs. An opt-in, human-gated `setup` role can install one approved, pinned candidate; the gate then checks the installed identity and that the command carried no auto-confirm flag.
 
 ### Audit and review
 
-- **`audit` profile** (`references/audit.md`). A read-only, ultrareview-style sweep, either a bug-finder (`--mode bugs`) or a project map (`--mode map`). Dimension reviewers are dispatched as producers, and the gate then reproduces or refutes each candidate. Findings that don't reproduce get dropped. `integrate` is a no-op, since the report is the artifact and nothing lands in the audited tree. `--depth shallow|module|exhaustive` tunes fan-out, with exhaustive budget-printed and confirm-gated.
-- **Devil's advocate on unanimous** (`references/gate.md`). An opt-in reviewer: one extra `capable` reviewer charged with refuting a unanimous pass. Off by default, on for `audit`.
-- **Pre-fix refuter** (`references/gate.md`). Before the first fix iteration, a must-fix that is only a prediction (reasoned to a `file:line`, no run evidence) gets one targeted dispatch to run the check that settles it: hard refuting evidence drops the finding, no evidence leaves it standing — one such dispatch is cheaper than a fix round spent on a false positive, and it's an evidence run, not another reviewer.
-- **Evidence at emit time** (`references/gate.md`). A reviewer can't raise a finding without quoting what motivates it: the `file:line`, the failing command and its output, or a case that reproduces it. A finding with nothing behind it doesn't count. It's logged as an unverified note, never a must-fix, until someone re-raises it with the evidence. That catches a confidently-wrong claim before it's ever voiced, on top of the older rule that a refuted prediction loses to hard evidence at synthesis time.
-- **Confidence on every finding** (`references/gate.md`). Findings carry a confidence (how certain the claim is real) alongside severity (how much it would hurt). The two are separate axes, so the panel can surface a proven bug ahead of a hunch. Confidence only affects display order. It never hides anything: a high-severity finding always surfaces whatever its confidence, the Reality Checker always reports, and must-fix status still rides on severity alone. Ranking down a low-signal note is allowed; burying a real one is not.
-- **Security method** (`references/security.md`). When security is in scope, the security reviewer can follow a stack-neutral OWASP and STRIDE checklist (secrets, dependencies and supply chain, CI/CD config, the OWASP Top 10, STRIDE per component, LLM/AI surfaces, and the skill supply chain) instead of relying on whatever the cast agent happens to know. It's a checklist the reviewer reads, not a scanner or a new gate step. Its findings enter the gate like any other, with the same emit-time evidence and the same verdict.
+- **`audit` profile** (`references/audit.md`). A read-only, many-reviewer adversarial sweep — bug-finder (`--mode bugs`) or project map (`--mode map`). Dimension reviewers run as producers; the gate reproduces or refutes each candidate and drops what doesn't reproduce. `--depth shallow|module|exhaustive` tunes fan-out.
+- **Devil's advocate on unanimous** (`references/gate.md`). One opt-in extra `capable` reviewer charged with refuting a unanimous pass — off by default, on for `audit`.
+- **Pre-fix refuter** (`references/gate.md`). A must-fix that is only a prediction (a reasoned `file:line`, no run evidence) gets one targeted dispatch, before the first fix iteration, to run the check that settles it: hard refuting evidence drops it; no evidence leaves it standing. One evidence run — not another reviewer — beats a fix round spent on a false positive.
+- **Evidence at emit time** (`references/gate.md`). No finding counts without its motivating artifact — the `file:line`, the failing command and output, or a reproducing case. Anything less is an unverified note, never a must-fix, until re-raised with evidence; at synthesis a refuted prediction still loses to hard evidence.
+- **Confidence on every finding** (`references/gate.md`). Confidence (how certain it's real) rides alongside severity (how much it hurts), so a proven bug outranks a hunch — but it affects display order only: high severity always surfaces, the Reality Checker always reports, must-fix status rides on severity alone. Ranking down a low-signal note is allowed; burying a real one is not.
+- **Security method** (`references/security.md`). When security is in scope, the reviewer can follow a stack-neutral OWASP/STRIDE checklist — secrets, dependencies and supply chain, CI/CD, the OWASP Top 10, STRIDE per component, LLM/AI surfaces, the skill supply chain — instead of whatever the cast agent happens to know. A checklist the reviewer reads, not a scanner or a new gate step; findings enter the gate like any other. (Adapted from [gstack](https://github.com/garrytan/gstack).)
 
 ### Safety guardrails
 
-Two things keep a run bounded, and it's worth being honest about what they are. On the background-subagent path (four of the five CLIs, plus Claude Code's default mode) they're model-compliance rules and tripwires, not a hard sandbox: nothing at the OS level halts a misbehaving agent, so the rules are written to be hard to miss and are checked as the run goes. On Claude Code with the Workflow tool a real limit sits underneath as a second layer, but the design doesn't lean on it.
+Being honest about what bounds a run: on the background-subagent path (four of the five CLIs, plus Claude Code's default mode) the guards are model-compliance rules and tripwires, not a hard sandbox — nothing at the OS level halts a misbehaving agent, so the rules are written to be hard to miss and checked as the run goes. On Claude Code with the Workflow tool a real limit sits underneath, but the design doesn't lean on it.
 
-- **Recursion firewall.** A dispatched agent is a leaf. It does its one task and returns, and it never re-invokes `/dreamteam`, acts as the conductor, or spawns its own subagents. Only the conductor dispatches, so the call tree stays one level deep by identity rather than by a counter anyone tracks. Session stickiness, the rule that keeps later tasks inside dreamteam once you've invoked it, is the conductor's alone and never reaches a leaf. The firewall is stated twice on purpose: at the top of the skill for an agent that auto-loads it, and in every dispatch brief for one that never loads it at all. Three run-wide caps ride alongside it, all on by default with no flag: a concurrency ceiling (8, hard limit 16) that serializes the excess instead of fanning wider, a cumulative dispatch backstop (60) that stops the run and escalates to you instead of continuing quietly, and a confirm-gate that prints the projected cost and waits for your OK before a large fan-out, even under `--autonomy auto`. A fourth is conditional: in Workflow mode a user token target makes the harness's live remaining budget a run ceiling too, met by scheduling alone — never by thinning the review gate.
-- **Execution discipline.** A producer that runs a shell command watches it to completion and reads the output and exit status before it moves on. It won't proceed on a command it didn't see finish, because a command you never observed is not evidence. Anything long-running or backgrounded gets a bounded wait with a timeout and then a check of the result, never an open-ended one; if it hangs past the bound the producer kills and retries once, or reports the hang and continues with what it has, rather than parking the task in a wait state. This is a discipline the model follows, not something the harness enforces: the harness owns the shell, and this is the obligation to actually watch it.
-- **Optional hard enforcement (Claude Code).** Claude Code fires `PreToolUse` hooks inside dispatched subagents, not only the main session — a leaf's tool calls carry a non-null agent id, the conductor's don't. dreamteam ships an **opt-in** hook (`hooks/dreamteam-run-policy.js`, **off by default**; set `DREAMTEAM_ENFORCE=1` to arm) that uses this to turn two of the prose guards into real blocks: a leaf that tries to dispatch or re-invoke `/dreamteam` is denied outright (the recursion firewall), and the conductor's own dispatches are capped hard at `max_total_dispatches`. It is **fail-open** — any parse or IO error allows, so it can't be the reason a legitimate call is blocked — and **Claude-Code-only**. The prose guards stay the default everywhere and are the *only* layer on Codex, Gemini, CodeWhale, and OpenCode; the budget confirm-gate and the shell-timeout discipline stay prose on Claude Code too. Installed as the plugin, the hook auto-wires (still inert until you set `DREAMTEAM_ENFORCE=1`). For a skill-only install, paste this into your Claude Code `settings.json` (point the path at your dreamteam checkout):
-
-  ```json
-  {
-    "env": { "DREAMTEAM_ENFORCE": "1" },
-    "hooks": {
-      "PreToolUse": [
-        {
-          "matcher": "Agent|Task|Skill",
-          "hooks": [
-            { "type": "command", "command": "node \"/ABSOLUTE/PATH/TO/dreamteam/hooks/dreamteam-run-policy.js\"" }
-          ]
-        }
-      ]
-    }
-  }
-  ```
-
-  Optional env knobs: `DREAMTEAM_MAX_TOTAL_DISPATCHES` (default 60) and `DREAMTEAM_RUN_TTL_MS` (stale-run auto-reset, default 12h).
+- **Recursion firewall.** A dispatched agent is a **leaf**: it does its one briefed task and returns — never re-invoking `/dreamteam`, conducting, or spawning subagents. Only the conductor dispatches, so the call tree stays one level deep by identity, not by a counter; session stickiness binds the conductor alone. The firewall is stated twice on purpose: atop the skill for an agent that auto-loads it, and in every dispatch brief for one that never loads it.
+- **Run-wide caps, on by default with no flag.** A concurrency ceiling (8, hard limit 16) serializes the excess rather than fanning wider; a cumulative dispatch backstop (60) stops the run and escalates to you rather than continuing quietly; a confirm-gate prints projected cost and waits for your OK before a large fan-out, even under `--autonomy auto`. In Workflow mode a user token target adds a fourth: the harness's live remaining budget becomes a run ceiling, met by scheduling alone — serialize, shrink the remaining fan-out, stop and escalate — never by thinning the review gate.
+- **Execution discipline.** A producer watches every shell command to completion and reads its output and exit status before moving on — an unobserved command is not evidence. Long-running work gets a bounded, timed wait, then a check; past the bound, kill and retry once, or report the hang and continue with what it has. A discipline the model follows, not something the harness enforces.
+- **Optional hard enforcement (Claude Code).** `PreToolUse` hooks fire inside dispatched subagents too (a leaf's tool calls carry a non-null agent id; the conductor's don't), so an **opt-in, off-by-default** hook — `hooks/dreamteam-run-policy.js`, armed by `DREAMTEAM_ENFORCE=1` — turns two prose guards into real blocks: a leaf trying to dispatch or re-invoke `/dreamteam` is denied, and the conductor is hard-capped at `max_total_dispatches`. **Fail-open** (any parse or IO error allows — it can't block a legitimate call) and **Claude-Code-only**: prose stays the default everywhere, the *only* layer on the other four CLIs — and the confirm-gate and shell-timeout discipline stay prose on Claude Code too. The plugin install auto-wires it (still inert until armed); a skill-only install copies the JSON from `hooks/hooks.json` into `settings.json` (matcher `Agent|Task|Skill`; swap `${CLAUDE_PLUGIN_ROOT}` for your checkout's absolute path) plus `"env": { "DREAMTEAM_ENFORCE": "1" }`. Knobs: `DREAMTEAM_MAX_TOTAL_DISPATCHES` (default 60), `DREAMTEAM_RUN_TTL_MS` (stale-run reset, default 12h).
 
 ### Learning and lifecycle
 
-- **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) emits evidence-tagged learnings the Caster consults next time. Skill self-edits are proposed and human-gated, never automatic. `--evolve` adds an opt-in benchmark-evolution loop for ai-research (`references/evolve.md`).
-- **Wrapper** (`references/wrapper.md`). For a raw idea rather than a plan, it sequences `brainstorming → writing-plans → loop` and keeps the human approval gates in place.
-- **Autonomy.** `auto` proposes the crew, then proceeds and reports at gates. `confirm` confirms the crew and each verdict. `step` pauses per workstream. On top of that cadence, the conductor classifies each mid-run call as Mechanical (decided by the plan or the evidence, so it just proceeds), Taste (defensible either way, so it proceeds and notes the choice), or a User-Challenge (a call that would change your stated direction or take a costly, hard-to-reverse step). A User-Challenge always pauses and asks, even under `auto`, and defaults to your choice. The run report ends with a short decision log of these calls. It lives in the report only, with no persisted store, since dreamteam stays stateless.
+- **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) writes evidence-tagged learnings the Caster consults on later runs of the same project; skill self-edits are proposed and human-gated, never automatic. `--evolve` opts into a benchmark-evolution loop for ai-research (`references/evolve.md`).
+- **Wrapper** (`references/wrapper.md`). A raw idea (rather than a plan) runs `brainstorming → writing-plans → loop`, keeping the human approval gates.
+- **Autonomy.** `auto` proposes the crew then proceeds, reporting at gates; `confirm` confirms the crew and each verdict; `step` pauses per workstream. On top of that cadence, each mid-run call is classified: Mechanical (fixed by plan or evidence — proceed), Taste (defensible either way — proceed, note the choice), or User-Challenge (changes your stated direction, or costly and hard to reverse) — which always pauses and asks, even under `auto`, defaulting to your choice. The report ends with a decision log of these calls — report-only; dreamteam stays stateless.
 
 ## Dependencies
 
-Everything is resolved or substituted at runtime. The installers report what's missing as a warning, not a block, though a path needing a missing dependency stays dark until you install it. For the install commands, see [Install](#install).
+Everything resolves or substitutes at runtime; a missing item warns rather than blocks ([Install](#install) states the stays-dark caveat and holds the commands).
 
-- **superpowers plugin** (REQUIRED). Provides `brainstorming`, `writing-plans`, `using-git-worktrees`, `verification-before-completion`, and `finishing-a-development-branch` ([github.com/obra/superpowers](https://github.com/obra/superpowers)).
-- **find-skills** (REQUIRED). From the `skills` CLI ([github.com/vercel-labs/skills](https://github.com/vercel-labs/skills)). It also backs the advisory recommendation in `references/recommend.md`, alongside the awesome-claude-code `THE_RESOURCES_TABLE.csv`.
-- **ai-research skills** (optional). `creative-thinking-for-research`, `brainstorming-research-ideas`, `literature-review`, and `ml-paper-writing`, used by the ai-research profile. Each installs the same `npx skills add …` way.
-- **agents.** Cast per profile. Reality Checker and Code Reviewer are used widely. The `audit` profile adds `root-cause-analyst`, `Explore`, `Software Architect`, `Performance Benchmarker`, and `Security Engineer`. `general-purpose` is built-in.
-- **ponytail** (optional). An external enforcer of dreamteam's native minimal-code principle; the gate checks for over-engineering with or without it. It's composed onto code-producing producers when installed.
-- **graphify** (optional). An external AST code-graph tool the Caster uses as navigation infra (`--graph on|off|auto`), mostly for the `audit` profile and codebase-heavy runs. When it's absent, agents read the tree directly, and it never decides a verdict. It's recommend-only and never bundled; `references/recommend.md` carries the install command and the full behavior ([github.com/safishamsi/graphify](https://github.com/safishamsi/graphify)).
-- **Recommendation sources.** When a profile needs an agent, skill, or command beyond the bundled and required set, the Caster recommends it from its upstream source and prints the command for you to run (agency-agents, ECC, SuperClaude, superpowers, ui-ux-pro-max, and graphify). It never installs anything itself. See `references/recommend.md`.
+- **Required:** the **superpowers** plugin and **find-skills** ([Install → Step 1](#install) lists what each provides); `find-skills` also backs the recommender, alongside the awesome-claude-code `THE_RESOURCES_TABLE.csv`.
+- **Recommended:** `ui-ux-pro-max`, composed onto UI Designer by the `ux-designer` profile when installed; absent, UI Designer designs natively — accessibility stays non-waivable either way.
+- **Agents.** Cast per profile — the [Profiles](#profiles-seed-set) table names each crew. **21 specialists ship vendored in `vendor/`** (agency-agents, ECC, SuperClaude — MIT, provenance in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)), registered by the plugin install via `plugin.json`; a skill-only install registers none, so the Caster resolves names from your live agent registry, substituting or flagging what's missing. `Explore` and `general-purpose` are host built-ins.
+- **ai-research skills** (optional): `creative-thinking-for-research`, `brainstorming-research-ideas`, `literature-review`, `ml-paper-writing` — installed the same `npx skills add` way as `find-skills`.
+- **Composed when installed** (optional, degrade gracefully): `karpathy-guidelines` (every code-producing producer), `superpowers:systematic-debugging` (the `debug` investigator), `architecture-reviewer` (the wrapper's optional tri-review); `ml-dev`'s `mle-workflow` ships bundled in `skills/mle-workflow/` — nothing to install.
+- **ponytail** (optional): an external enforcer of dreamteam's native minimal-code principle — the gate checks over-engineering with or without it; composed onto code producers when installed.
+- **graphify** (optional; recommend-only, never bundled): an external AST code-graph the Caster uses as navigation infra (`--graph on|off|auto`), mostly for `audit` and codebase-heavy runs; absent, agents read the tree directly, and it never decides a verdict ([github.com/safishamsi/graphify](https://github.com/safishamsi/graphify); install command in `references/recommend.md`).
+- **Recommendation sources.** Beyond the bundled and required set, the Caster recommends from the upstream source (agency-agents, ECC, SuperClaude, superpowers, ui-ux-pro-max, graphify) and prints the command for you to run — it never installs anything itself (`references/recommend.md`).
 
 ## Layout
 
 ```
-.claude-plugin/plugin.json    # Claude Code plugin manifest
+.claude-plugin/plugin.json    # plugin manifest — registers the vendored agents + the hook
 skills/dreamteam/
-  SKILL.md            # spine + invocation + flags + "you are the conductor" rule + autonomy
+  SKILL.md            # spine: invocation, flags, "you are the conductor", stickiness, autonomy
   references/
     profiles.md       # domain → crew rosters + gate + default tiers
-    caster.md         # crew selection + manifest schema + model-tier rubric + learnings consult
-    gate.md           # reviewer panel + synthesis + honesty rule + capped fix loop
-    loop.md           # per-workstream produce→gate→fix→integrate + escalation + re-anchor + retro
+    caster.md         # crew selection, manifest schema, tier rubric, learnings consult
+    gate.md           # reviewer panel, synthesis, honesty rule, capped fix loop
+    loop.md           # per-workstream produce→gate→fix→integrate, escalation, re-anchor
     wrapper.md        # full-lifecycle entry (brainstorming → writing-plans → loop)
-    platforms.md      # per-CLI tool / dispatch / model-tier map (Claude · Codex · Gemini · CodeWhale · OpenCode)
-    audit.md          # the audit profile — read-only bug-finding / project-map sweeps
-    recommend.md      # advisory skill/resource recommendations (Caster recommends, never installs)
-    security.md       # OWASP/STRIDE security review method (adapted from gstack)
-    retro.md          # post-run learnings (Layer A)
+    platforms.md      # per-CLI tool / dispatch / model-tier map
+    audit.md          # the audit profile — read-only sweeps
+    recommend.md      # advisory recommendations (Caster recommends, never installs)
+    security.md       # OWASP/STRIDE security review method
+    retro.md          # post-run learnings
     learnings.md      # the learnings store the Caster consults
-    evolve.md         # benchmark evolution (Layer B — opt-in, ai-research)
-tests/scenarios.md    # S1–S58 subagent validation scenarios + grounding dry-runs (full Input/Expected specs)
-docs/VALIDATION.md    # the same scenarios as a one-line indexed list
-install.ps1 / install.sh                     # Claude Code installers + dependency check
-gemini-extension.json / GEMINI.md            # Gemini CLI packaging
+    evolve.md         # benchmark evolution (opt-in, ai-research)
+skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
+vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
+hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
+tests/scenarios.md    # S1–S58 validation scenarios + grounding dry-runs (full specs)
+docs/VALIDATION.md    # the same scenarios, one line each
+THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
+install.sh / install.ps1          # Claude Code installers + dependency check
+gemini-extension.json / GEMINI.md # Gemini CLI packaging
 scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into other CLIs
 ```
 
 ## Validation
 
-The skill is validated by dispatching fresh subagents at the scenarios in [tests/scenarios.md](tests/scenarios.md): 58 of them plus two grounding dry-runs, covering selection, the gate, the loop, the profiles, execution mode, the bundled-agent build, the gate and autonomy hardening, the run-level safety guardrails, gate resilience, cost-proportional gating, the refuter and reliability accuracy checks, dispatch efficiency, and budget-aware scaling. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario with a one-line summary.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 58 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, and budget-aware scaling. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 
 <details>
 <summary><b>1. The dependency check printed <code>[ ! ]</code> warnings. Is it broken?</b></summary>
 
-No. The check is best-effort, so it warns rather than blocks. dreamteam resolves or substitutes missing pieces at runtime through the Caster and `find-skills`. The catch is that any path needing a missing dependency won't fire until you install the flagged item. An agent flagged `(may be built-in/plugin; verified at runtime)` is often already available and just isn't on disk where the check looks.
+No — the check is best-effort: it warns rather than blocks, and a flagged path won't fire until you install the item ([Install → Step 1](#install) has the commands). Markers: `[ok bundled]` ships with the plugin; `[ ! ]` is a missing depended-on or recommended item; `[recommend-only]` is optional, per profile; `[built-in] Explore, general-purpose (host-resolved at runtime)` never needs installing.
 </details>
 
 <details>
-<summary><b>2. Where do I get <code>superpowers</code> and <code>find-skills</code>?</b></summary>
+<summary><b>2. How do I cancel or abort a run?</b></summary>
 
-See [Install → Step 1](#install) for the commands and sources.
+Dispatch doesn't hold your prompt (OpenCode excepted — [Invocation shapes](#invocation-shapes)); stop it the way you stop any background agent work: interrupt the session, or cancel the background task or Workflow. The conductor only integrates after a passing gate, so stopping mid-workstream leaves nothing half-merged. `--autonomy confirm` or `step` gives explicit stop points.
 </details>
 
 <details>
-<summary><b>3. How do I cancel or abort a run?</b></summary>
+<summary><b>3. How much does it cost, and how do I economize?</b></summary>
 
-Dispatch is always background, so the run isn't holding your prompt. Stop it the way you stop any background agent work in your CLI: interrupt the session, or cancel the background task or Workflow. The conductor only integrates after a passing gate, so stopping mid-workstream leaves nothing half-merged. In-flight producers run in their own worktrees, which are cleaned up on a pass. Use `--autonomy confirm` or `step` if you want explicit stop points.
+Roughly N times a single prompt — [Cost & scale](#cost--scale) has the dispatch anatomy, a counted example, and the knobs.
 </details>
 
 <details>
-<summary><b>4. How much does it cost, and how do I economize?</b></summary>
+<summary><b>4. It ran inline and didn't dispatch. Is that expected?</b></summary>
 
-A run spawns several agents, so it costs roughly N times a single prompt. See [Cost & scale](#cost--scale). Economize with `--cost cheap` (cheaper producers; reviewers stay `capable`), `--autonomy confirm` (gate spend at the crew and each verdict), and a tighter `--depth shallow|module`.
-</details>
-
-<details>
-<summary><b>5. It ran inline and didn't dispatch. Is that expected?</b></summary>
-
-No. dreamteam's conductor dispatches every workstream to a background agent. Once invoked, the session is sticky, so later artifact-producing tasks also go through dreamteam. If you see it editing files directly to produce a workstream, that's drift the skill guards against. A genuinely tiny, non-workstream edit, like a typo fix you asked for directly, may be done inline, but it gets announced as such first.
+No. The conductor dispatches every workstream to a background agent; editing files directly to produce one is drift the skill guards against (a genuinely tiny, non-workstream edit you asked for directly may be done inline, announced as such first). The flip side: once invoked, dreamteam is session-sticky — later artifact-producing tasks route through it until you say **"don't use dreamteam for this"** (skip one task) or **"stop using dreamteam this session"** (off until a later `/dreamteam` re-arms it).
 </details>
 
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
 
-[^prior-art]: dreamteam didn't invent verification-led orchestration. loki-mode and the Edict pattern cover nearby ground, and larger systems like ECC and metaswarm run their own verification loops and quality gates. The difference is the shape: a single opt-in skill rather than a standing platform, with one honesty gate that is mandatory by construction instead of optional wiring. metaswarm is the closest functional peer, since it also spans Claude, Gemini, and Codex and enforces gates of its own.
+[^prior-art]: dreamteam didn't invent verification-led orchestration — larger systems, [ECC](https://github.com/affaan-m/ECC) among them, run their own verification loops and quality gates. ECC is an always-on operator layer: dozens of agents, a large skill library, persistent memory, and learning that runs unprompted and platform-wide. dreamteam learns too ([Learning and lifecycle](#learning-and-lifecycle)); the difference is the shape, not whether it happens — its learning stays inside one skill and one project, skill-changing edits are proposed for your approval rather than applied, and the honesty gate is never traded away: a single opt-in skill rather than a standing platform, with a gate mandatory by construction instead of optional wiring.
