@@ -13,6 +13,8 @@
 
 <p align="center"><i>Minimal in both directions: dreamteam itself is one skill, not a platform — and its producers ship the least code that fully works, never by cutting validation or security.</i></p>
 
+<p align="center"><i>Same bar on a $20 plan as a $200 one: <a href="#cost--scale">capacity</a> sizes the run, never the verification gate.</i></p>
+
 <p align="center">
   <a href="#try-it">Try it</a> ·
   <a href="#why-dreamteam">Why</a> ·
@@ -48,6 +50,8 @@ It assembles a review crew, reproduces every finding against your real code, and
 Most agent tools hand a task to a model and trust whatever comes back: the model reports passing tests, and sometimes they don't pass — or the passing test never ran the code under it. dreamteam is built for that gap: everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken implementation is rejected, not trusted.
 
 It is also deliberately small — one skill you invoke per task, not a framework you build against or a platform you live in, running on five CLIs rather than one runtime. The nearest comparison, [ECC](https://github.com/affaan-m/ECC), is honestly a different category: an always-on operator layer, broader and deeper than dreamteam — whereas dreamteam stays a per-task skill whose learning is confined to your project and never rewrites the skill without your sign-off.[^prior-art]
+
+It also declares its degradation contract: most orchestrators implicitly assume top-tier models and headroom, while dreamteam writes down what a small plan changes — a smaller, more interactive run — and what it never changes: the verification bar ([Cost & scale](#cost--scale) has the contract).
 
 | | Dispatches work | Gates the result | No framework to build | Cross-CLI |
 |---|:---:|:---:|:---:|:---:|
@@ -227,7 +231,7 @@ Reviewers never drop below `capable`, so they're the largest steady cost — but
 - `--autonomy confirm` gates spend by confirming the crew and each verdict
 - `--depth shallow|module` and a tighter task keep fan-out small
 
-The run also sizes its defaults to the plan powering it: a capacity profile (`--capacity`, default auto — read off the conducting model's own tier) remaps concurrency, the dispatch backstop, and the confirm threshold for low/standard/high plans, and on a small plan resolves the reviewer floor to the best tier the plan actually has, declared once at cast — never the gate bar, which is identical at every capacity. On a below-capable conducting model a weak-conductor guard also arms (off the model itself, whatever the flag says): borderline calls come to you instead of being guessed — safer, not smarter, at the price of a few more pauses.
+Same bar, smaller bites: a low-capacity run gets fewer concurrent dispatches, a lower backstop, and more pauses, but the gate is identical at every capacity — the same Reality Checker requirement, risk-class panels, `min_pass`, and evidence-and-honesty rules. The run also sizes itself to the plan powering it — dreamteam runs on anything from a $20 plan to a $200 one. A capacity profile (`--capacity`, default auto — read off the conducting model's own tier) remaps concurrency, the dispatch backstop, and the confirm threshold for low/standard/high plans, and on a small plan resolves the reviewer floor to the best tier the plan actually has, declared once at cast; on a below-capable conducting model a weak-conductor guard also arms (off the model itself, whatever the flag says), routing borderline calls to you instead of guessing. The honest limits: how much a run gets through in a session does differ by plan, and the guard makes a weak conductor safer, not smarter. The strongest objection is real: on a small plan the model behind the bar is weaker too — the identical gate, executed by a weaker judge. The evidence rules are what compensate: a verifying reviewer re-runs the build and tests itself, never takes the producer's word, so a weaker reviewer holding run evidence beats a stronger one trusting claims; what no rule buys back is brilliance — the rules bound how wrong a run can be, not how insightful.
 
 Default-on caps ride underneath; [Safety guardrails](#safety-guardrails) specifies them.
 
