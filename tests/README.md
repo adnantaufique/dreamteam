@@ -1,6 +1,6 @@
 # dreamteam tests
 
-`scenarios.md` is the source of truth: **S1–S62 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
+`scenarios.md` is the source of truth: **S1–S63 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
 
 `run-scenarios.{ps1,sh}` is a **live spot-check harness** for a *subset* of those scenarios. Per selected ID it:
 

@@ -109,6 +109,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S61** — at cast time the conductor inventories relevant connected MCP capability as capability classes (resolved per the host's own MCP config, never assumed) and hands it down in the working set of the units it would help — a verifying reviewer's set names the browser automation available via the connected Playwright MCP server — while a host with none gets a silent skip and native work: availability only, never a dependency, never required by any gate.
 - **S62** — a producer with attached skills returns one line naming which were actually used and to what effect ("attached skills unused" when none), the run record carries it, and the retro may emit an evidence-backed learnings row in the LEARNINGS table (never the ledger) that the next cast's consult can surface — advice for attachment decisions, never enforcement, never an auto-detach.
 
+## Capacity parity (S63)
+
+- **S63** — the capacity profile sizes the run to the plan powering it: auto reads the conducting model's own tier as the plan proxy (below capable → low, capable → standard, max → high; an explicit `--capacity` wins), low remaps the run_policy defaults to 3/30/15 with a sequential bias and resolves the reviewer floor to the best available tier declared once at cast (no per-dispatch nagging), a mid-run tier-unavailable event downgrades once and flagged, hard ceilings stand, and low integrates after every workstream and resumes rather than re-runs after a session kill — while the gate bar (always-on Reality Checker, risk guards and non-waivables, min_pass, evidence rules) is identical at every capacity.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].
