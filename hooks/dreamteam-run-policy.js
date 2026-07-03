@@ -24,8 +24,11 @@
  *                    (Agent/Task) or re-invokes /dreamteam (Skill=dreamteam) is denied.
  *                    This is the recursion firewall, now a real mechanical block.
  *   (b) DISPATCH CAP — main-session (agent_id null) Agent/Task dispatches are counted
- *                    per run and denied over run_policy.max_total_dispatches (default 60),
- *                    with a "STOP and escalate to the human" reason.
+ *                    per run and denied over the hook's OWN threshold
+ *                    (DREAMTEAM_MAX_TOTAL_DISPATCHES, default 60) — a fixed second layer
+ *                    that never reads the capacity-resolved run_policy.max_total_dispatches
+ *                    (set the env knob to align it with a lower capacity row) — with a
+ *                    "STOP and escalate to the human" reason.
  *
  * FAIL-OPEN by construction: any parse/IO/unexpected error, or the opt-in being off,
  * exits 0 with NO output = normal permission flow (allow). A backstop must NEVER be the

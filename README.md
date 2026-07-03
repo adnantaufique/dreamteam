@@ -227,7 +227,7 @@ Reviewers never drop below `capable`, so they're the largest steady cost — but
 - `--autonomy confirm` gates spend by confirming the crew and each verdict
 - `--depth shallow|module` and a tighter task keep fan-out small
 
-The run also sizes its defaults to the plan powering it: a capacity profile (`--capacity`, default auto — read off the conducting model's own tier) remaps concurrency, the dispatch backstop, and the confirm threshold for low/standard/high plans, and on a small plan resolves the reviewer floor to the best tier the plan actually has, declared once at cast — never the gate bar, which is identical at every capacity.
+The run also sizes its defaults to the plan powering it: a capacity profile (`--capacity`, default auto — read off the conducting model's own tier) remaps concurrency, the dispatch backstop, and the confirm threshold for low/standard/high plans, and on a small plan resolves the reviewer floor to the best tier the plan actually has, declared once at cast — never the gate bar, which is identical at every capacity. On a below-capable conducting model a weak-conductor guard also arms (off the model itself, whatever the flag says): borderline calls come to you instead of being guessed — safer, not smarter, at the price of a few more pauses.
 
 Default-on caps ride underneath; [Safety guardrails](#safety-guardrails) specifies them.
 
@@ -347,7 +347,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
-tests/scenarios.md    # S1–S63 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S64 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -357,7 +357,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 63 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), and capacity parity (the plan-sized capacity profile). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 64 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), capacity parity (the plan-sized capacity profile), and the weak-conductor guard (checklist-and-pause discipline on a below-capable conductor). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 

@@ -28,6 +28,8 @@ Each reviewer is dispatched at its manifest model tier (default capable; Reality
 
 **Must-fixes = the surviving Critical/High findings** after reconciliation.
 
+**Under the weak-conductor guard** (`SKILL.md` §Autonomy — armed on a below-capable conducting model) the conductor synthesizes by the numbered steps above **verbatim, stating each step's outcome**, and a synthesis it cannot justify by one of those steps is **escalated to the user, never improvised** — the steps themselves are unchanged and defined only here.
+
 **Devil's advocate on unanimous pass.** When the reviewer panel is **unanimous-pass** AND its size ≥ `gate_policy.devils_advocate_min_panel` AND `gate_policy.devils_advocate_on_unanimous` is true, the conductor dispatches **one** additional `capable` reviewer charged to **refute the consensus**. Its findings are **evidence-reconciled like any other** (a mere prediction loses to hard evidence — it cannot veto a genuinely clean result); then re-decide the verdict. This runs **once per gate, OUTSIDE the fix loop** — no nesting, no looping. Default off (cheap profiles don't pay for it); the `audit` profile turns it on.
 
 ## 3. Honesty rule — non-negotiable (the reason the gate exists)

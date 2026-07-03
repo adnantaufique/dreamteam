@@ -68,7 +68,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 ## Run-level safety (S46–S48)
 
 - **S46** — a dispatched leaf does its one briefed task and returns: it never re-invokes `/dreamteam`, orchestrates, or spawns further subagents; session stickiness and the conductor rules bind only the main session; and both the `<SUBAGENT-STOP>` block and the leaf-firewall dispatch brief hold the depth-1 invariant by identity rather than a counter.
-- **S47** — the `run_policy` caps are mechanical and on by default: excess concurrency serializes rather than fanning wider (8, ceiling 16), reaching the cumulative dispatch backstop (60) stops the run and escalates to a human, and a large projected fan-out (30) prints its cost and waits for confirmation even under auto.
+- **S47** — the `run_policy` caps are mechanical and on by default: excess concurrency serializes rather than fanning wider (8, ceiling 16), reaching the cumulative dispatch backstop (60) stops the run and escalates to a human, and a large projected fan-out (30) prints its cost and waits for confirmation even under auto — the defaults as written = the `high` capacity row (`--capacity` itself defaults to auto).
 - **S48** — execution discipline: a producer watches each shell command to completion and reads its output before proceeding, uses a bounded poll for a backgrounded command, and never abandons the task in an open-ended wait state.
 
 ## Gate resilience (S49–S50)
@@ -112,6 +112,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 ## Capacity parity (S63)
 
 - **S63** — the capacity profile sizes the run to the plan powering it: auto reads the conducting model's own tier as the plan proxy (below capable → low, capable → standard, max → high; an explicit `--capacity` wins), low remaps the run_policy defaults to 3/30/15 with a sequential bias and resolves the reviewer floor to the best available tier declared once at cast (no per-dispatch nagging), a mid-run tier-unavailable event downgrades once and flagged, hard ceilings stand, and low integrates after every workstream and resumes rather than re-runs after a session kill — while the gate bar (always-on Reality Checker, risk guards and non-waivables, min_pass, evidence rules) is identical at every capacity.
+
+## Weak-conductor guard (S64)
+
+- **S64** — on a below-capable conducting model the guard arms off the model itself (even under an explicit `--capacity high`): borderline classifications go higher rather than being argued down, gate synthesis quotes `gate.md` §2's numbered steps with each outcome stated (never pausing what a step settles), a synthesis no step justifies pauses with the four-part frame, a fix-then-pass is reported as exactly that, and integrate states the verification evidence and commit-message self-check explicitly — while a capable conductor is a no-op and the gate bar is identical at both: safer, not smarter, at the price of more pauses.
 
 ## Grounding dry-runs
 
