@@ -62,7 +62,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S41** — an unevidenced finding is unverified at emit time: it does not count and is never a must-fix until re-raised with the motivating `file:line`, command output, or reproducing case, while an evidenced (even low-confidence) finding still counts.
 - **S42** — confidence ranks findings for display but never hides one: a high-severity low-confidence finding still surfaces, must-fix stays keyed to severity, and the Reality Checker always reports.
 - **S43** — under `--autonomy auto` the conductor proceeds on Mechanical and Taste calls but pauses on a User-Challenge, presenting the four-part frame and defaulting to the user.
-- **S44** — the run report closes with a stateless decision-log table (report output only, no persisted or event-sourced store) and prints "no notable decisions" when there were none.
+- **S44** — the run report carries a stateless decision-log table (report output only, no persisted or event-sourced store) — followed by the handoff notes that close the user-facing report — and prints "no notable decisions" when there were none.
 - **S45** — the security reviewer may follow the stack-neutral OWASP/STRIDE method scope-aware and infra-first, its findings enter the gate like any other with no new verdict, and the gstack methodology-only attribution is present.
 
 ## Run-level safety (S46–S48)
@@ -102,7 +102,12 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 
 ## Plain-language guidance (S60)
 
-- **S60** — every workstream verdict carries a one-sentence plain-language gloss faithful to the gate's definitions (a fix-then-pass is never rounded up to sound like a clean pass), the run report ends with handoff notes naming the human follow-ups or the explicit nothing-outstanding line, and a cap-STOP presents the four-part options frame with costed options and a stated default — all additive, no flag, no persisted state.
+- **S60** — every workstream verdict carries a one-sentence plain-language gloss faithful to the gate's definitions (a fix-then-pass is never rounded up to sound like a clean pass), the user-facing report closes with handoff notes naming the human follow-ups or the explicit nothing-outstanding line, and a cap-STOP presents the four-part options frame with costed options and a stated default — all additive, no flag, no persisted state.
+
+## Cast-time awareness (S61–S62)
+
+- **S61** — at cast time the conductor inventories relevant connected MCP capability as capability classes (resolved per the host's own MCP config, never assumed) and hands it down in the working set of the units it would help — a verifying reviewer's set names the browser automation available via the connected Playwright MCP server — while a host with none gets a silent skip and native work: availability only, never a dependency, never required by any gate.
+- **S62** — a producer with attached skills returns one line naming which were actually used and to what effect ("attached skills unused" when none), the run record carries it, and the retro may emit an evidence-backed learnings row in the LEARNINGS table (never the ledger) that the next cast's consult can surface — advice for attachment decisions, never enforcement, never an auto-detach.
 
 ## Grounding dry-runs
 

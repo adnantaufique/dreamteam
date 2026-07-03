@@ -14,6 +14,8 @@ The skill is authored in Claude Code tool names; on other CLIs read them as:
 
 > The Codex column defers to `references/codex-tools.md`, which ships with the **superpowers** plugin (a REQUIRED compose, see `SKILL.md`) — install superpowers to resolve those tool names.
 
+**MCP servers are host-level and exist on all five CLIs** — the cast-time MCP inventory (`references/caster.md`) resolves per the **host's own MCP config** (which servers are actually connected), never assumed from this map or from memory.
+
 ## Dispatch resolver
 Dispatch a "**`<role>` at tier `<T>`**" resolves to:
 - **Claude Code:** the Agent tool — `subagent_type=<agent>`, `model=<resolved>`.
