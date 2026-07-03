@@ -214,7 +214,7 @@ Retro → learning persisted: "web+auth → add Security Engineer by default; as
 
 </details>
 
-Every line is a real format from the skill: the manifest (`references/caster.md`), the re-anchor and escalation lines (`references/loop.md`), the verdict and its evidence (`references/gate.md`).
+Every line is a real format from the skill: the manifest (`references/caster.md`), the re-anchor and escalation lines (`references/loop.md`), the verdict and its evidence (`references/gate.md`). Newer runs additionally gloss each verdict in one plain-language sentence and end with handoff notes naming what still needs a human (`references/loop.md` §Report) — the transcript predates those lines.
 
 ## Cost & scale
 
@@ -345,7 +345,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
-tests/scenarios.md    # S1–S59 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S60 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -355,7 +355,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 59 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, and the agent scouting ledger. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 60 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, and plain-language run guidance. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 

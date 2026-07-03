@@ -100,6 +100,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 
 - **S59** — the retro maps the run record (the report buffer, including the dispatch-reliability tally) to the agents that filled those roles and appends or increments scouting-ledger rows in `learnings.md` (no row without run evidence, same project_key scoping as learnings); the Caster consults the ledger as an advisory tie-break between fitting candidates, citing the numbers in its rationale, ignoring rows with fewer than 3 dispatches as noise, never overriding an explicit `--roster`, and never touching the always-on Reality Checker — rows are defaults, never bans.
 
+## Plain-language guidance (S60)
+
+- **S60** — every workstream verdict carries a one-sentence plain-language gloss faithful to the gate's definitions (a fix-then-pass is never rounded up to sound like a clean pass), the run report ends with handoff notes naming the human follow-ups or the explicit nothing-outstanding line, and a cap-STOP presents the four-part options frame with costed options and a stated default — all additive, no flag, no persisted state.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].
