@@ -53,7 +53,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S35** — in a graphify-backed audit the graph is built once at fan-out, is the substrate for `map` and navigation-only for `bugs` (findings still reproduced against live source), and the report still ships when it is absent.
 - **S36** — all six component upstreams surface with real commands carrying no `-y`, each labelled by role, with the Claude-only `/plugin` form falling back to git/npx/pip off-Claude; the Caster recommends, never installs.
 - **S37** — the retro stamps each learning with a project_key (git-remote hash) and a numeric confidence (0.3–0.9), and the Caster consults only global plus current-project entries, weighted by that confidence.
-- **S38** — the installer prints the registered install commands and prompts (default N) only when a required or recommended item is missing and the shell is interactive; it never auto-installs, and bundled agents are never in the prompt set.
+- **S38** — the installer prints the registered install commands unconditionally, and prompts (default N) only when a required or recommended item is missing and the shell is interactive; it never auto-installs, and bundled agents are never in the prompt set.
 - **S39** — the published marketplace path and the install.sh / install.ps1 manual fallback land the same bundle, and the README notes the marketplace is public but not yet client-tested.
 - **S40** — dreamteam loads as a native OpenCode skill (auto-read from `~/.claude/skills`, or synced to `~/.config/opencode/skills`), dispatches via the task tool with provider-agnostic tiers, and runs background-only with no Workflow tool.
 
@@ -95,6 +95,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 ## Budget-aware scaling (S58)
 
 - **S58** — in Workflow mode with a user token target the conductor honors the harness's live token budget as a run ceiling alongside the static caps (the budget projection incorporates it), degrading by scheduling only — serialize, then defer or shrink the remaining fan-out, then stop and escalate — never weakening the gate (no risk reclassification, no sub-class panel, no dropped Reality Checker or non-waivable reviewer, no tier-floor or honesty relaxation; a run that can't afford its gates stops); background and non-Claude runs keep the static caps as the only layer, which is correct behavior rather than an error.
+
+## Agent scouting ledger (S59)
+
+- **S59** — the retro maps the run record (the report buffer, including the dispatch-reliability tally) to the agents that filled those roles and appends or increments scouting-ledger rows in `learnings.md` (no row without run evidence, same project_key scoping as learnings); the Caster consults the ledger as an advisory tie-break between fitting candidates, citing the numbers in its rationale, ignoring rows with fewer than 3 dispatches as noise, never overriding an explicit `--roster`, and never touching the always-on Reality Checker — rows are defaults, never bans.
 
 ## Grounding dry-runs
 

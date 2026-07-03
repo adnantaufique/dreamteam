@@ -16,6 +16,8 @@ At run end (when `--retro` is on — the default), the conductor dispatches a **
 
 The feedback reviewer emits a **learnings record** (schema below), which is appended to `references/learnings.md`.
 
+It also **updates the agent scouting ledger** (`references/learnings.md`): map the **run record** (`loop.md` §Report buffer, including the dispatch-reliability tally) to the **agents that filled those roles** (the manifest names them; **refuter outcomes are already keyed to the emitting reviewer**, so no re-derivation is needed) and **append — or increment the counts of — the matching ledger rows** (same agent + `project_key` + `profile`). **No row without run evidence** — the honesty rule below applies to ledger rows exactly as to learnings. The **human gate is unchanged**: ledger rows are auto-persisted **advisory data**, like learnings-store entries — never skill edits.
+
 ## Learnings schema
 ```
 { run_id, project_key, profile, task_kind,

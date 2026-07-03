@@ -306,7 +306,7 @@ Being honest about what bounds a run: on the background-subagent path (four of t
 
 ### Learning and lifecycle
 
-- **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) writes evidence-tagged learnings the Caster consults on later runs of the same project; skill self-edits are proposed and human-gated, never automatic. `--evolve` opts into a benchmark-evolution loop for ai-research (`references/evolve.md`).
+- **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) writes evidence-tagged learnings the Caster consults on later runs of the same project; skill self-edits are proposed and human-gated, never automatic. The retro also accumulates a per-agent scouting ledger — first-try, drop, and refuted-prediction counts the Caster uses to choose between fitting agents, advisory and never a ban. `--evolve` opts into a benchmark-evolution loop for ai-research (`references/evolve.md`).
 - **Wrapper** (`references/wrapper.md`). A raw idea (rather than a plan) runs `brainstorming → writing-plans → loop`, keeping the human approval gates.
 - **Autonomy.** `auto` proposes the crew then proceeds, reporting at gates; `confirm` confirms the crew and each verdict; `step` pauses per workstream. On top of that cadence, each mid-run call is classified: Mechanical (fixed by plan or evidence — proceed), Taste (defensible either way — proceed, note the choice), or User-Challenge (changes your stated direction, or costly and hard to reverse) — which always pauses and asks, even under `auto`, defaulting to your choice. The report ends with a decision log of these calls — report-only; dreamteam stays stateless.
 
@@ -345,7 +345,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
-tests/scenarios.md    # S1–S58 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S59 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -355,7 +355,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into ot
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 58 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, and budget-aware scaling. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 59 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, and the agent scouting ledger. The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 
