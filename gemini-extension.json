@@ -1,6 +1,6 @@
 {
   "name": "dreamteam",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Domain-agnostic meta-orchestration — a Caster picks a crew; each workstream runs produce -> gate -> fix -> integrate. Model tiers cheap/standard/capable/max map to Gemini flash-lite/flash/pro per references/platforms.md.",
   "contextFileName": "GEMINI.md"
 }

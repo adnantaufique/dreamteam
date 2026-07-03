@@ -1,6 +1,6 @@
 {
   "name": "dreamteam",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AI agents say \"done\" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.",
   "author": { "name": "Adnan" },
   "homepage": "https://github.com/adnantaufique/dreamteam",
