@@ -31,5 +31,5 @@
 
   <!-- pillars + platforms -->
   <text x="56" y="258" class="mono" font-size="18" fill="#3fb950">correct<tspan fill="#6e7681"> · </tspan><tspan fill="#8b949e">versatile</tspan><tspan fill="#6e7681"> · </tspan><tspan fill="#8b949e">minimal</tspan></text>
-  <text x="1156" y="258" text-anchor="end" class="mono" font-size="18" fill="#6e7681">claude · codex · gemini · codewhale · opencode</text>
+  <text x="1156" y="258" text-anchor="end" class="mono" font-size="18" fill="#6e7681">claude · codex · gemini · codewhale · opencode · cursor</text>
 </svg>

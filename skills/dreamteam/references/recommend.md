@@ -91,4 +91,4 @@ Default = **recommend-and-print** (the human runs the command). The installer is
 
 ## Cross-platform
 - Resolve the install command per `--platform` / `platforms.md`.
-- The awesome-claude-code source is **Claude-only**: under any non-Claude `--platform` (gemini/codex/codewhale/opencode), **suppress** its Claude-specific recommendations (hooks/commands/status-lines/CLAUDE.md).
+- The awesome-claude-code source is **Claude-only**: under any non-Claude `--platform` (gemini/codex/codewhale/opencode/cursor), **suppress** its Claude-specific recommendations (hooks/commands/status-lines/CLAUDE.md).

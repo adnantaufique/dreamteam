@@ -1,6 +1,6 @@
 # dreamteam tests
 
-`scenarios.md` is the source of truth: **S1–S64 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
+`scenarios.md` is the source of truth: **S1–S65 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
 
 `run-scenarios.{ps1,sh}` is a **live spot-check harness** for a *subset* of those scenarios. Per selected ID it:
 
@@ -39,5 +39,5 @@ Each selected scenario spends **two billed model calls** (`claude -p` run + judg
 ## Limits — read before trusting a result
 
 - **LLM-judged and non-deterministic.** Both the dry-run and the verdict come from a model. A PASS is a spot-check, **not CI proof**; a FAIL is a lead to investigate, not automatically a regression. `scenarios.md` remains the source of truth — re-judge there.
-- **Only skill files are inlined.** Repo files outside the skill tree (`install.sh`, `plugin.json`, `THIRD_PARTY_NOTICES.md`, sync scripts, ...) are never inlined. Measured with `--extract`: S26/S38/S39 retain no skill-file citation and fall back to `SKILL.md` alone; S40 gets its cited `references/platforms.md` + `SKILL.md` (not a fallback). None of the four is faithfully testable here.
+- **Only skill files are inlined.** Repo files outside the skill tree (`install.sh`, `plugin.json`, `THIRD_PARTY_NOTICES.md`, sync scripts, ...) are never inlined. Measured with `--extract`: S26/S38/S39 retain no skill-file citation and fall back to `SKILL.md` alone; S40/S65 get their cited `references/platforms.md` + `SKILL.md` (not a fallback — the sync scripts are never inlined). None of the five is faithfully testable here.
 - The judge sees each scenario's Expected line verbatim; the "judge coherence, not exact agent picks" nuance is left to the judge model's discretion.

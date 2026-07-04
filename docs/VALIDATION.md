@@ -14,7 +14,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S8** — the retro emits evidence-tagged learning deltas, flags any skill-editing delta as proposed and human-gated, and records nothing it can't cite from run evidence.
 - **S9** — the Caster applies a seeded learning as an overridable default (the `android` key normalizes to mobile-dev), not a hard rule.
 - **S10** — an `--evolve` dry-run describes the opt-in, ai-research-only generations loop with its per-generation reviewers, budget, and human gate, without executing.
-- **S11** — tiers and the back-compat `sonnet` name resolve correctly across Claude, Gemini, Codex, CodeWhale, and OpenCode, each with the right dispatch verb.
+- **S11** — tiers and the back-compat `sonnet` name resolve correctly across Claude, Gemini, Codex, CodeWhale, OpenCode, and Cursor, each with the right dispatch verb.
 - **S12** — the conductor dispatches every workstream, including a one-line README badge, cites the governing rule, and pauses rather than producing inline if dispatch is unavailable.
 
 ## Minimal-code and the recommendation system (S13–S17)
@@ -116,6 +116,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 ## Weak-conductor guard (S64)
 
 - **S64** — on a below-capable conducting model the guard arms off the model itself (even under an explicit `--capacity high`): borderline classifications go higher rather than being argued down, gate synthesis quotes `gate.md` §2's numbered steps with each outcome stated (never pausing what a step settles), a synthesis no step justifies pauses with the four-part frame, a fix-then-pass is reported as exactly that, and integrate states the verification evidence and commit-message self-check explicitly — while a capable conductor is a no-op and the gate bar is identical at both: safer, not smarter, at the price of more pauses.
+
+## Cursor platform (S65)
+
+- **S65** — dreamteam loads as a native Cursor Agent Skill (auto-read from `~/.claude/skills`, or synced to `~/.cursor/skills`), dispatches via the Task tool to native subagents with `is_background` non-blocking execution and picker-resolved never-pinned tiers, auto-detects off the `~/.cursor` marker checked before the `~/.agents`→codex fallback, and has no Workflow tool, so `--execution workflow` falls back to background.
 
 ## Grounding dry-runs
 

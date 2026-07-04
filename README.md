@@ -5,7 +5,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.3.0-3fb950" alt="version">
   <img src="https://img.shields.io/badge/license-Apache_2.0-blue" alt="license">
-  <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale_·_OpenCode-30363d" alt="platforms">
+  <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale_·_OpenCode_·_Cursor-30363d" alt="platforms">
   <img src="https://img.shields.io/badge/Claude_Code-plugin-1f6feb" alt="Claude Code plugin">
 </p>
 
@@ -49,7 +49,7 @@ It assembles a review crew, reproduces every finding against your real code, and
 
 Most agent tools hand a task to a model and trust whatever comes back: the model reports passing tests, and sometimes they don't pass — or the passing test never ran the code under it. dreamteam is built for that gap: everything it produces goes through a verification gate, and an independent Reality Checker re-runs the evidence before anything is called done. A green suite that still passes against a deliberately broken implementation is rejected, not trusted.
 
-It is also deliberately small — one skill you invoke per task, not a framework you build against or a platform you live in, running on five CLIs rather than one runtime. The nearest comparison, [ECC](https://github.com/affaan-m/ECC), is honestly a different category: an always-on operator layer, broader and deeper than dreamteam — whereas dreamteam stays a per-task skill whose learning is confined to your project and never rewrites the skill without your sign-off.[^prior-art]
+It is also deliberately small — one skill you invoke per task, not a framework you build against or a platform you live in, running on six CLIs rather than one runtime. The nearest comparison, [ECC](https://github.com/affaan-m/ECC), is honestly a different category: an always-on operator layer, broader and deeper than dreamteam — whereas dreamteam stays a per-task skill whose learning is confined to your project and never rewrites the skill without your sign-off.[^prior-art]
 
 It also declares its degradation contract: most orchestrators implicitly assume top-tier models and headroom, while dreamteam writes down what a small plan changes — a smaller, more interactive run — and what it never changes: the verification bar ([Cost & scale](#cost--scale) has the contract).
 
@@ -61,7 +61,7 @@ It also declares its degradation contract: most orchestrators implicitly assume 
 
 ## Install
 
-**Prerequisites:** a supported CLI (Claude Code, Codex, Gemini, CodeWhale, or OpenCode); a git repo for build-type runs (work happens in isolated git worktrees); paid model-API usage — a run spawns several agents ([Cost & scale](#cost--scale)).
+**Prerequisites:** a supported CLI (Claude Code, Codex, Gemini, CodeWhale, OpenCode, or Cursor); a git repo for build-type runs (work happens in isolated git worktrees); paid model-API usage — a run spawns several agents ([Cost & scale](#cost--scale)).
 
 Three steps; install commands live here, and other sections link back.
 
@@ -106,7 +106,7 @@ dreamteam also installs as a Claude Code plugin marketplace — the one path tha
 
 *(Available now that the repo is public but untested from a client yet; if it doesn't resolve, `install.sh` / `install.ps1` always works.)*
 
-**Other CLIs.** The skill is CLI-agnostic — tool names, dispatch, and model tiers resolve per `skills/dreamteam/references/platforms.md`. Sync scripts (each has a `.ps1` twin for Windows): `sync-to-codex` → `~/.agents/skills/dreamteam/` (+ an `AGENTS.md` pointer); `sync-to-gemini` (+ `gemini-extension.json`) → `~/.gemini/agents/dreamteam/`; `sync-to-codewhale` → `~/.codewhale/skills/dreamteam/` (load via `/skills`); `sync-to-opencode` → `~/.config/opencode/skills/dreamteam/` (native `skill` tool). OpenCode also natively reads `~/.claude/skills`, so Step 2 alone covers it — its sync script is only for setups that never ran the Claude installer.
+**Other CLIs.** The skill is CLI-agnostic — tool names, dispatch, and model tiers resolve per `skills/dreamteam/references/platforms.md`. Sync scripts (each has a `.ps1` twin for Windows): `sync-to-codex` → `~/.agents/skills/dreamteam/` (+ an `AGENTS.md` pointer); `sync-to-gemini` (+ `gemini-extension.json`) → `~/.gemini/agents/dreamteam/`; `sync-to-codewhale` → `~/.codewhale/skills/dreamteam/` (load via `/skills`); `sync-to-opencode` → `~/.config/opencode/skills/dreamteam/` (native `skill` tool); `sync-to-cursor` → `~/.cursor/skills/dreamteam/` (native Agent Skills). OpenCode and Cursor also natively read `~/.claude/skills`, so Step 2 alone covers them — their sync scripts are only for setups that never ran the Claude installer.
 
 </details>
 
@@ -271,7 +271,7 @@ Beyond [Quickstart](#quickstart): `--profile ai-research` splits a run into para
 /dreamteam --cost cheap --autonomy confirm "…"                      # economize + gate every verdict
 ```
 
-Neither execution mode ties up your session, except OpenCode: its native dispatch is synchronous in core, so a run blocks the chat unless you add a community background plugin (`references/platforms.md`) — the dispatch → gate → integrate contract holds either way. The Workflow tool suits many independent workstreams; `--execution workflow` on the other four CLIs is invalid and falls back to background subagents. With no flag, dreamteam asks once per session, defaulting to background.
+Neither execution mode ties up your session, except OpenCode: its native dispatch is synchronous in core, so a run blocks the chat unless you add a community background plugin (`references/platforms.md`) — the dispatch → gate → integrate contract holds either way. The Workflow tool suits many independent workstreams; `--execution workflow` on the other five CLIs is invalid and falls back to background subagents. With no flag, dreamteam asks once per session, defaulting to background.
 
 ### Full flag grammar
 
@@ -281,7 +281,7 @@ Neither execution mode ties up your session, except OpenCode: its native dispatc
       [--depth shallow|module|exhaustive] [--mode bugs|map] [--graph on|off|auto]
       [--roster planner=…,producers=<role>:<agent>[@<tier>][+<skill>];…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step] [--execution background|workflow]
-      [--models …] [--cost cheap|balanced|quality] [--capacity auto|low|standard|high] [--full-gate] [--platform claude|codex|gemini|codewhale|opencode]
+      [--models …] [--cost cheap|balanced|quality] [--capacity auto|low|standard|high] [--full-gate] [--platform claude|codex|gemini|codewhale|opencode|cursor]
       [--retro on|off] [--learnings <path>] [--evolve [generations=N]]
       [--repo <path>] [--branch <name>] [--parallel]
 ```
@@ -289,7 +289,7 @@ Neither execution mode ties up your session, except OpenCode: its native dispatc
 ### Selection and cost
 
 - **Cost-aware tiers.** Each role gets the cheapest tier that fits (`references/platforms.md` maps tiers to concrete models); reviewers stay `capable`; the loop escalates a tier on a gate failure or a BLOCKED producer. Tune with `--cost` / `--models`.
-- **Cross-platform.** All five CLIs; `--platform` auto-detects the host.
+- **Cross-platform.** All six CLIs; `--platform` auto-detects the host.
 - **Recommendations** (`references/recommend.md`). When a best-fit skill isn't installed, the Caster surfaces advice from skills.sh (via `find-skills`) plus the awesome-claude-code `THE_RESOURCES_TABLE.csv` — it recommends, never installs. An opt-in, human-gated `setup` role can install one approved, pinned candidate; the gate then checks the installed identity and that the command carried no auto-confirm flag.
 
 ### Audit and review
@@ -303,12 +303,12 @@ Neither execution mode ties up your session, except OpenCode: its native dispatc
 
 ### Safety guardrails
 
-Being honest about what bounds a run: on the background-subagent path (four of the five CLIs, plus Claude Code's default mode) the guards are model-compliance rules and tripwires, not a hard sandbox — nothing at the OS level halts a misbehaving agent, so the rules are written to be hard to miss and checked as the run goes. On Claude Code with the Workflow tool a real limit sits underneath, but the design doesn't lean on it.
+Being honest about what bounds a run: on the background-subagent path (five of the six CLIs, plus Claude Code's default mode) the guards are model-compliance rules and tripwires, not a hard sandbox — nothing at the OS level halts a misbehaving agent, so the rules are written to be hard to miss and checked as the run goes. On Claude Code with the Workflow tool a real limit sits underneath, but the design doesn't lean on it.
 
 - **Recursion firewall.** A dispatched agent is a **leaf**: it does its one briefed task and returns — never re-invoking `/dreamteam`, conducting, or spawning subagents. Only the conductor dispatches, so the call tree stays one level deep by identity, not by a counter; session stickiness binds the conductor alone. The firewall is stated twice on purpose: atop the skill for an agent that auto-loads it, and in every dispatch brief for one that never loads it.
 - **Run-wide caps, on by default with no flag.** A concurrency ceiling (8, hard limit 16) serializes the excess rather than fanning wider; a cumulative dispatch backstop (60) stops the run and escalates to you rather than continuing quietly; a confirm-gate prints projected cost and waits for your OK before a large fan-out, even under `--autonomy auto`. The stated defaults are the high capacity row — a low- or standard-capacity run resolves them to 3/30 · 5/45 (the capacity profile, [Cost & scale](#cost--scale)); the hard limit never changes. In Workflow mode a user token target adds a fourth: the harness's live remaining budget becomes a run ceiling, met by scheduling alone — serialize, shrink the remaining fan-out, stop and escalate — never by thinning the review gate.
 - **Execution discipline.** A producer watches every shell command to completion and reads its output and exit status before moving on — an unobserved command is not evidence. Long-running work gets a bounded, timed wait, then a check; past the bound, kill and retry once, or report the hang and continue with what it has. A discipline the model follows, not something the harness enforces.
-- **Optional hard enforcement (Claude Code).** `PreToolUse` hooks fire inside dispatched subagents too (a leaf's tool calls carry a non-null agent id; the conductor's don't), so an **opt-in, off-by-default** hook — `hooks/dreamteam-run-policy.js`, armed by `DREAMTEAM_ENFORCE=1` — turns two prose guards into real blocks: a leaf trying to dispatch or re-invoke `/dreamteam` is denied, and the conductor is hard-capped at `max_total_dispatches` — at the hook's own threshold (default 60; it doesn't read the capacity profile), so on a low- or standard-capacity run the armed layer sits looser beneath the prose cap, fail-safe in direction — set `DREAMTEAM_MAX_TOTAL_DISPATCHES` to align it with a lower capacity row. **Fail-open** (any parse or IO error allows — it can't block a legitimate call) and **Claude-Code-only**: prose stays the default everywhere, the *only* layer on the other four CLIs — and the confirm-gate and shell-timeout discipline stay prose on Claude Code too. The plugin install auto-wires it (still inert until armed); a skill-only install copies the JSON from `hooks/hooks.json` into `settings.json` (matcher `Agent|Task|Skill`; swap `${CLAUDE_PLUGIN_ROOT}` for your checkout's absolute path) plus `"env": { "DREAMTEAM_ENFORCE": "1" }`. Knobs: `DREAMTEAM_MAX_TOTAL_DISPATCHES` (default 60), `DREAMTEAM_RUN_TTL_MS` (stale-run reset, default 12h).
+- **Optional hard enforcement (Claude Code).** `PreToolUse` hooks fire inside dispatched subagents too (a leaf's tool calls carry a non-null agent id; the conductor's don't), so an **opt-in, off-by-default** hook — `hooks/dreamteam-run-policy.js`, armed by `DREAMTEAM_ENFORCE=1` — turns two prose guards into real blocks: a leaf trying to dispatch or re-invoke `/dreamteam` is denied, and the conductor is hard-capped at `max_total_dispatches` — at the hook's own threshold (default 60; it doesn't read the capacity profile), so on a low- or standard-capacity run the armed layer sits looser beneath the prose cap, fail-safe in direction — set `DREAMTEAM_MAX_TOTAL_DISPATCHES` to align it with a lower capacity row. **Fail-open** (any parse or IO error allows — it can't block a legitimate call) and **Claude-Code-only**: prose stays the default everywhere, the *only* layer on the other five CLIs — and the confirm-gate and shell-timeout discipline stay prose on Claude Code too. The plugin install auto-wires it (still inert until armed); a skill-only install copies the JSON from `hooks/hooks.json` into `settings.json` (matcher `Agent|Task|Skill`; swap `${CLAUDE_PLUGIN_ROOT}` for your checkout's absolute path) plus `"env": { "DREAMTEAM_ENFORCE": "1" }`. Knobs: `DREAMTEAM_MAX_TOTAL_DISPATCHES` (default 60), `DREAMTEAM_RUN_TTL_MS` (stale-run reset, default 12h).
 
 ### Learning and lifecycle
 
@@ -351,17 +351,17 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
-tests/scenarios.md    # S1–S64 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S65 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
 gemini-extension.json / GEMINI.md # Gemini CLI packaging
-scripts/sync-to-{codex,gemini,codewhale,opencode}.*   # mirror the skill into other CLIs
+scripts/sync-to-{codex,gemini,codewhale,opencode,cursor}.*   # mirror the skill into other CLIs
 ```
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 64 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), capacity parity (the plan-sized capacity profile), and the weak-conductor guard (checklist-and-pause discipline on a below-capable conductor). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 65 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), capacity parity (the plan-sized capacity profile), the weak-conductor guard (checklist-and-pause discipline on a below-capable conductor), and the Cursor platform (sixth-CLI wiring). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 
