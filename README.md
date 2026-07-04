@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.3.0-3fb950" alt="version">
+  <img src="https://img.shields.io/badge/version-1.4.0-3fb950" alt="version">
   <img src="https://img.shields.io/badge/license-Apache_2.0-blue" alt="license">
   <img src="https://img.shields.io/badge/runs_on-Claude_·_Codex_·_Gemini_·_CodeWhale_·_OpenCode_·_Cursor-30363d" alt="platforms">
   <img src="https://img.shields.io/badge/Claude_Code-plugin-1f6feb" alt="Claude Code plugin">

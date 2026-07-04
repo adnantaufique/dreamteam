@@ -3,14 +3,14 @@
   "owner": { "name": "Adnan" },
   "metadata": {
     "description": "Marketplace for dreamteam, the verification-led multi-agent orchestration skill.",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "plugins": [
     {
       "name": "dreamteam",
       "source": "./",
       "description": "AI agents say \"done\" too easily. dreamteam makes a second, independent agent prove it before anything ships, re-running your tests and rejecting fake or over-claimed passes.",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "license": "Apache-2.0",
       "author": { "name": "Adnan" },
       "homepage": "https://github.com/adnantaufique/dreamteam",
