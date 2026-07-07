@@ -8,7 +8,7 @@ After a run, the conductor learns from what actually happened — adapting SIA's
 The **run record** is the conductor's per-run **report buffer** — the same per-workstream verdicts, must-fixes, escalation tier-paths, and fix-iteration counts, and the decision log and dispatch-reliability record the loop already prints (`loop.md` §Report), plus each producer's **skill-usage line** (which attached skills were used, to what effect — `loop.md` §"Model tier + escalation"). The retro consumes that buffer; it does **not** require a new persisted artifact.
 
 ## The retro procedure
-At run end (when `--retro` is on — the default), the conductor dispatches a **feedback** reviewer with the run record:
+At run end (when `--retro` is on — the default), the conductor dispatches a **feedback** reviewer with the run record (except a **micro-scale** run — the conductor appends the learnings line itself, no feedback-agent dispatch, `loop.md` §Retro; the evidence rule below governs either way):
 - per-workstream gate verdicts + must-fixes + the **evidence** behind each pass;
 - **escalations** — which roles hit BLOCKED/needs-work and what tier finally cleared them (from F1's reported tier path);
 - fix-iteration counts; agent/tier substitutions; first-try misses;

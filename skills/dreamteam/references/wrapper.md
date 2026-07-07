@@ -3,7 +3,7 @@
 When the input is a **raw idea**, not an approved plan, the wrapper sequences existing skills up to the point where the core engine takes over. **It adds no new logic — it only sequences, and it preserves every human-judgment gate.**
 
 ## Entry
-Use the wrapper when entry detection (`SKILL.md`) sees a **raw idea** ("an app that…", "a tool to…", a vague goal) rather than a plan-ref. A plan-ref skips the wrapper and goes straight to `references/loop.md`.
+Use the wrapper when entry detection (`SKILL.md`) sees a **raw idea** ("an app that…", "a tool to…", a vague goal) rather than a plan-ref. A plan-ref skips the wrapper and goes straight to `references/loop.md`; so does a **micro**-classed raw task (`SKILL.md` spine step 2 — its one-sentence blast radius is the plan).
 
 ## The sequence
 ```
