@@ -231,6 +231,8 @@ Reviewers never drop below `capable`, so they're the largest steady cost — but
 - `--autonomy confirm` gates spend by confirming the crew and each verdict
 - `--depth shallow|module` and a tighter task keep fan-out small
 
+One saving is default rather than a knob: every dispatch brief carries a run context package — the repo map (affected files and their roles, entry points, verify commands) built once per run and updated as producers report back — so each agent spends its budget on the task instead of re-exploring the repo. It carries facts only, never verdicts: reviewers still re-run all verification themselves.
+
 Same bar, smaller bites: a low-capacity run gets fewer concurrent dispatches, a lower backstop, and more pauses, but the gate is identical at every capacity — the same Reality Checker requirement, risk-class panels, `min_pass`, and evidence-and-honesty rules. The run also sizes itself to the plan powering it — dreamteam runs on anything from a $20 plan to a $200 one. A capacity profile (`--capacity`, default auto — read off the conducting model's own tier) remaps concurrency, the dispatch backstop, and the confirm threshold for low/standard/high plans, and on a small plan resolves the reviewer floor to the best tier the plan actually has, declared once at cast; on a below-capable conducting model a weak-conductor guard also arms (off the model itself, whatever the flag says), routing borderline calls to you instead of guessing. The honest limits: how much a run gets through in a session does differ by plan, and the guard makes a weak conductor safer, not smarter. The strongest objection is real: on a small plan the model behind the bar is weaker too — the identical gate, executed by a weaker judge. The evidence rules are what compensate: a verifying reviewer re-runs the build and tests itself, never takes the producer's word, so a weaker reviewer holding run evidence beats a stronger one trusting claims; what no rule buys back is brilliance — the rules bound how wrong a run can be, not how insightful.
 
 Default-on caps ride underneath; [Safety guardrails](#safety-guardrails) specifies them.
@@ -351,7 +353,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # opt-in PreToolUse enforcement (dreamteam-run-policy.js + hooks.json)
-tests/scenarios.md    # S1–S65 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S66 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -361,7 +363,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode,cursor}.*   # mirror the skill 
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 65 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), capacity parity (the plan-sized capacity profile), the weak-conductor guard (checklist-and-pause discipline on a below-capable conductor), and the Cursor platform (sixth-CLI wiring). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 66 scenarios plus two grounding dry-runs, covering selection, the gate and loop, profiles, execution mode, the bundled-agent build, gate and autonomy hardening, run-level safety, resilience, cost-proportional gating, the refuter and reliability checks, dispatch efficiency, budget-aware scaling, the agent scouting ledger, plain-language run guidance, cast-time awareness (the MCP capability inventory + skill-usage feedback), capacity parity (the plan-sized capacity profile), the weak-conductor guard (checklist-and-pause discipline on a below-capable conductor), the Cursor platform (sixth-CLI wiring), and the run context package (the facts-only repo map riding every dispatch brief). The subagent's behavior is the test, so re-run after any edit (install first). [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line.
 
 ## FAQ / Troubleshooting
 

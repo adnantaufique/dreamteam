@@ -121,6 +121,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 
 - **S65** — dreamteam loads as a native Cursor Agent Skill (auto-read from `~/.claude/skills`, or synced to `~/.cursor/skills`), dispatches via the Task tool to native subagents with `is_background` non-blocking execution and picker-resolved never-pinned tiers, auto-detects off the `~/.cursor` marker checked before the `~/.agents`→codex fallback, and has no Workflow tool, so `--execution workflow` falls back to background.
 
+## Run context package (S66)
+
+- **S66** — one facts-only run context package is built at run start (from the plan's own discovery whenever the plan carries one, a single conductor scout only when it doesn't, or an audit run's fan-out-start substrate) and rides the tail of every dispatch brief — producer, reviewer, refuter, fix re-dispatch — each carriage opening with the fixed map-not-testimony guard clause, with the cache-stable preamble untouched: the affected-file map with one-line roles, entry points, the build/test/verify commands, a conventions pointer, the folded-in MCP capability, and graph pointers; producers return one FACTS-DISCOVERED element (files touched, the exact verify command, off-map "package deltas") the conductor merges between dispatches, never mid-dispatch; reviewers get the package plus the producer's claimed touched-file list and suggested verify command — claims to check, not ground truth — so they verify rather than re-map while still re-running verification themselves — the package carries facts, never conclusions ("correct"/"tests pass"/"looks good" are banned), a finding is never inadmissible for being off-map, and nothing persists beyond the run.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].
