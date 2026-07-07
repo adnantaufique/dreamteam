@@ -16,7 +16,7 @@
   <circle cx="44" cy="46" r="7" fill="#ff5f56"/>
   <circle cx="68" cy="46" r="7" fill="#ffbd2e"/>
   <circle cx="92" cy="46" r="7" fill="#27c93f"/>
-  <text x="1156" y="52" text-anchor="end" class="mono" font-size="18" fill="#6e7681">v1.4.0 · plugin</text>
+  <text x="1156" y="52" text-anchor="end" class="mono" font-size="18" fill="#6e7681">v1.5.0 · plugin</text>
 
   <!-- prompt wordmark -->
   <text x="52" y="172" class="mono" font-size="70" font-weight="700">
