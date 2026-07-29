@@ -14,7 +14,7 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 - **S8** — the retro emits evidence-tagged learning deltas, flags any skill-editing delta as proposed and human-gated, and records nothing it can't cite from run evidence.
 - **S9** — the Caster applies a seeded learning as an overridable default (the `android` key normalizes to mobile-dev), not a hard rule.
 - **S10** — an `--evolve` dry-run describes the opt-in, ai-research-only generations loop with its per-generation reviewers, budget, and human gate, without executing.
-- **S11** — tiers and the back-compat `sonnet` name resolve correctly across Claude, Gemini, Codex, CodeWhale, OpenCode, and Cursor, each with the right dispatch verb.
+- **S11** — tiers resolve per each platform's host-resolution rule (never a memorized model ID) across Claude, Gemini, Codex, CodeWhale, OpenCode, and Cursor — the back-compat `sonnet` name included — each with the right dispatch verb.
 - **S12** — the conductor dispatches every workstream, including a one-line README badge, cites the governing rule, and pauses rather than producing inline if dispatch is unavailable.
 
 ## Minimal-code and the recommendation system (S13–S17)
