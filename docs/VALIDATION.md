@@ -137,6 +137,10 @@ These are the subagent dry-run scenarios dreamteam ships with. There's no compil
 
 - **S69** — a raw task is scale-classified micro or full battery before the wrapper decision, on criteria checkable without doing the work (a one-sentence blast radius, no new interface or dependency, one producer + one workstream; any doubt → full battery, absolute under the weak-conductor guard), declared in the re-anchor line (full battery prints no tag); micro skips the wrapper but never the gate — one dispatched producer, the unchanged risk-class panel (a one-line auth fix gets micro ceremony and the full high-risk panel with its non-waivables), §5 verification scoped to the blast radius with the reviewer free to widen, a dispatch-free retro under the same evidence rule, and the one-screen report — upgrading to full battery mid-run when extra surface appears, never downgrading.
 
+## Operate entry class (S70)
+
+- **S70** — an operational DO-intent task ("upload and run a Colab notebook, monitor until done, download the results") classes `operate` at entry — no wrapper, no brainstorm, no plan doc (the operation is the spec): one operator producer dispatched with the completion criterion, the connected capability line, and a declared-long watchdog bound; the conductor never drives the service itself, the gate inspects the deliverable artifact plus captured completion evidence and never re-executes a side-effectful or paid operation (build/test re-run semantics untouched), the panel stays risk-scaled and widens past a manifest its risk class outgrew (a production restart classes high → the conductor widens the RC-only panel per the risk-scaling guard, under the entry class's light ceremony), and with no capability and no capable agent the existing escalate terminal presents "do it manually" as one option among others — never the default for a routable task.
+
 ## Grounding dry-runs
 
 - **Grounding A** — `/dreamteam "build an Android TV app from its spec"` picks the mobile-dev crew (Mobile App Builder + UI Designer), sequential workstreams, gate [Code Reviewer, Reality Checker].

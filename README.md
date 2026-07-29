@@ -249,6 +249,7 @@ Default-on caps ride underneath; [Safety guardrails](#safety-guardrails) specifi
 | **audit** *(read-only)* | dimension specialists as producers — *bugs:* Code Reviewer · Security Engineer · Performance Benchmarker · root-cause-analyst · *map:* Explore · Software Architect · system-architect + a synthesizer | Reality Checker (+ dimension specialists as verifiers) | **parallel** |
 | **ml-dev** | AI Engineer / python-expert · build-error-resolver / pytorch-build-resolver (training/CUDA build-fix) *(ML development, distinct from ai-research)* | methodology reviewer, Reality Checker (+ Security Engineer if infra/data-sensitive) | sequential |
 | **debug** | root-cause-analyst (investigate) · host code producer (fix) *(reproduce-first; skips plan-writing, but lands the fix)* | Reality Checker (reproduce-then-resolve: RED before / GREEN after + a regression test), Code Reviewer | sequential |
+| **operate** | general-purpose (or the host's computer-use agent) *(operational DO-intent; the operation is the spec — skips plan-writing; one operator drives the live service via a connected capability and delivers the artifact to the user)* | Reality Checker (artifact + observed completion; inspection-based for side-effectful/paid operations) | sequential |
 | **ux-designer** | UI Designer (+ ui-ux-pro-max) · deep-research-agent (redesign) · Frontend Developer (if code emitted) *(design-led; a11y non-waivable)* | a UX/design reviewer, an accessibility reviewer, Reality Checker (re-derives a11y evidence) (+ Code Reviewer if code emitted) | sequential |
 | **tutor** | deep-research-agent (understand) · Technical Writer (explain) | Reality Checker (explanation↔source; source wins), a clarity reviewer | sequential |
 | **generic** | general-purpose | Code Reviewer, Reality Checker | sequential |
@@ -279,7 +280,7 @@ Neither execution mode ties up your session, except OpenCode: its native dispatc
 
 ```
 /dreamteam <task | plan-ref>
-      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit|ml-dev|debug|ux-designer|tutor]
+      [--profile mobile-dev|web|ai-research|devops|qa|generic|audit|ml-dev|debug|operate|ux-designer|tutor]
       [--depth shallow|module|exhaustive] [--mode bugs|map] [--graph on|off|auto]
       [--roster planner=…,producers=<role>:<agent>[@<tier>][+<skill>];…,reviewers=…]
       [--skills a,b] [--autonomy auto|confirm|step] [--execution background|workflow]
@@ -353,7 +354,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # bundled hooks: opt-in PreToolUse enforcement + default-on compact reminder (hooks.json)
-tests/scenarios.md    # S1–S69 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S70 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -363,7 +364,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode,cursor}.*   # mirror the skill 
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 69 scenarios plus two grounding dry-runs. The subagent's behavior is the test, so re-run after any edit (install first). Coverage runs from crew selection, profiles, and the gate loop through run-level safety and resilience, cost and capacity scaling, platform wiring, and the efficiency layer — [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line, grouped by area.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 70 scenarios plus two grounding dry-runs. The subagent's behavior is the test, so re-run after any edit (install first). Coverage runs from crew selection, profiles, and the gate loop through run-level safety and resilience, cost and capacity scaling, platform wiring, and the efficiency layer — [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line, grouped by area.
 
 ## FAQ / Troubleshooting
 
