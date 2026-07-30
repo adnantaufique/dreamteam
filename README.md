@@ -315,7 +315,7 @@ Being honest about what bounds a run: on the background-subagent path (five of t
 
 ### Learning and lifecycle
 
-- **Learns from runs** (`--retro`, default on). A post-run retro (`references/retro.md`) writes evidence-tagged learnings the Caster consults on later runs of the same project; skill self-edits are proposed and human-gated, never automatic. The retro also accumulates a per-agent scouting ledger — first-try, drop, and refuted-prediction counts the Caster uses to choose between fitting agents, advisory and never a ban. `--evolve` opts into a benchmark-evolution loop for ai-research (`references/evolve.md`).
+- **Learns from runs — measurably** (`--retro`, default on). A post-run retro (`references/retro.md`) writes evidence-tagged learnings the Caster consults on later runs of the same project; skill self-edits are proposed and human-gated, never automatic. Learning is tracked, not just stored: a consult that sways a cast is recorded, the retro accumulates each applied learning's run outcomes against a per-profile baseline built only from runs where no learning was applied, and after three applied runs its confidence moves by exact arithmetic — a learning that never beats a still-growing baseline drops by rule (a baseline with no fresh runs holds it instead of punishing it), and one persisted at confidence ≥ 0.5 also emits a per-install test scenario the runner can execute (an advisory track record, not causal proof — there is no control arm). The retro also accumulates a per-agent scouting ledger — first-try, drop, and refuted-prediction counts the Caster uses to choose between fitting agents, advisory and never a ban. `--evolve` opts into a benchmark-evolution loop for ai-research (`references/evolve.md`).
 - **Wrapper** (`references/wrapper.md`). A raw idea (rather than a plan) runs `brainstorming → writing-plans → loop`, keeping the human approval gates — unless the task classes micro ([Cost & scale](#cost--scale)): then its one-sentence blast radius is the plan and the wrapper is skipped, never the gate.
 - **Autonomy.** `auto` proposes the crew then proceeds, reporting at gates; `confirm` confirms the crew and each verdict; `step` pauses per workstream. On top of that cadence, each mid-run call is classified: Mechanical (fixed by plan or evidence — proceed), Taste (defensible either way — proceed, note the choice), or User-Challenge (changes your stated direction, or costly and hard to reverse) — which always pauses and asks, even under `auto`, defaulting to your choice. The report carries a decision log of these calls, followed by the handoff notes that close the user-facing report — report-only; dreamteam stays stateless.
 
@@ -354,7 +354,7 @@ skills/dreamteam/
 skills/mle-workflow/  # bundled ML-engineering skill, composed by the ml-dev profile
 vendor/               # 21 bundled specialist agents (agency-agents · ecc · superclaude)
 hooks/                # bundled hooks: opt-in PreToolUse enforcement + default-on compact reminder (hooks.json)
-tests/scenarios.md    # S1–S70 validation scenarios + grounding dry-runs (full specs)
+tests/scenarios.md    # S1–S71 validation scenarios + grounding dry-runs (full specs)
 docs/VALIDATION.md    # the same scenarios, one line each
 THIRD_PARTY_NOTICES.md            # provenance + licenses for everything vendored
 install.sh / install.ps1          # Claude Code installers + dependency check
@@ -364,7 +364,7 @@ scripts/sync-to-{codex,gemini,codewhale,opencode,cursor}.*   # mirror the skill 
 
 ## Validation
 
-Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 70 scenarios plus two grounding dry-runs. The subagent's behavior is the test, so re-run after any edit (install first). Coverage runs from crew selection, profiles, and the gate loop through run-level safety and resilience, cost and capacity scaling, platform wiring, and the efficiency layer — [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line, grouped by area.
+Validation dispatches fresh subagents at [tests/scenarios.md](tests/scenarios.md): 71 scenarios plus two grounding dry-runs. The subagent's behavior is the test, so re-run after any edit (install first). Coverage runs from crew selection, profiles, and the gate loop through run-level safety and resilience, cost and capacity scaling, platform wiring, the efficiency layer, and the closed learning loop — [docs/VALIDATION.md](docs/VALIDATION.md) lists every scenario in one line, grouped by area.
 
 ## FAQ / Troubleshooting
 

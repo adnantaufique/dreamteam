@@ -1,6 +1,6 @@
 # dreamteam tests
 
-`scenarios.md` is the source of truth: **S1–S70 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
+`scenarios.md` is the source of truth: **S1–S71 + Grounding A/B**, each a prose **Input → Expected** spec, judged by giving a fresh subagent the named skill file(s) + the input (see its preamble).
 
 `run-scenarios.{ps1,sh}` is a **live spot-check harness** for a *subset* of those scenarios. Per selected ID it:
 
@@ -17,14 +17,24 @@ pwsh tests/run-scenarios.ps1 -List                 # print available scenario ID
 pwsh tests/run-scenarios.ps1 GroundingA S49        # run selected scenarios
 pwsh tests/run-scenarios.ps1 -Extract S49          # parse-only: block + cited files, no model calls
 pwsh tests/run-scenarios.ps1 -TimeoutSec 300 S5
+pwsh tests/run-scenarios.ps1 -List -File learned    # alternate scenario file (tests/learned-scenarios.md)
 
 bash tests/run-scenarios.sh --list
 bash tests/run-scenarios.sh GroundingA S49
 bash tests/run-scenarios.sh --extract S49
 TIMEOUT_SECS=300 bash tests/run-scenarios.sh S5
+bash tests/run-scenarios.sh --list --file learned   # alternate scenario file (tests/learned-scenarios.md)
 ```
 
+`-File` / `--file` selects an alternate scenario file (default `tests/scenarios.md`): a path as given, or a name resolved under `tests/` (`learned` → `tests/learned-scenarios.md`). Same block format, same parser.
+
 No default set: invoking with no IDs prints usage + the cost warning and exits 1. Exit 0 only if every selected scenario PASSed. A claude CLI failure or timeout is an **ERROR** row (distinct from FAIL) and also exits non-zero. Raw prompts/outputs are left in a temp dir (path printed) for inspection.
+
+## Learned scenarios (per-install tier)
+
+`tests/learned-scenarios.md` is a **second, per-install tier the retro emits — never shipped** (gitignored; absent until a run's retro persists a learning at confidence ≥ 0.5 or a promotion, `references/retro.md`). Each emitted block is S-format with IDs from **S1001** (no collision with the shipped set), Input = `caster.md` + a seeded `learnings.md` + a matching task, Expected = the S9 overridable-default pattern; a learning that drops from the store has its block removed with it. Run it with `-File learned` / `--file learned`.
+
+**Pre-release practice:** before a release, run the grounding scenarios plus a subset covering the areas the release touched (e.g. `pwsh tests/run-scenarios.ps1 GroundingA GroundingB S71 …`); on an install that has accumulated learned scenarios, run those too (`--file learned` + their IDs) to check persisted learnings still cast as overridable defaults.
 
 ## Cost
 

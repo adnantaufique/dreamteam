@@ -1,12 +1,16 @@
 [CmdletBinding(PositionalBinding = $false)]
-param([switch]$List, [switch]$Extract, [int]$TimeoutSec = 180,
+param([switch]$List, [switch]$Extract, [int]$TimeoutSec = 180, [string]$File,
       [Parameter(Position = 0, ValueFromRemainingArguments = $true)][string[]]$Ids)
 # Live spot-check runner for tests/scenarios.md - executes selected scenarios as headless dry-runs.
 # Each scenario = TWO billed `claude -p` calls (run + judge). No default set - IDs are explicit.
-# Usage: pwsh tests/run-scenarios.ps1 [-List] [-Extract] [-TimeoutSec 180] <ID ...>   e.g. S49 S50 GroundingA
+# Usage: pwsh tests/run-scenarios.ps1 [-List] [-Extract] [-TimeoutSec 180] [-File <name|path>] <ID ...>   e.g. S49 S50 GroundingA
 $ErrorActionPreference = 'Stop'
 $Tests = $PSScriptRoot; $Repo = Split-Path -Parent $Tests
 $Scen = "$Tests/scenarios.md"; $Skill = "$Repo/skills/dreamteam"
+if ($File) { # alternate scenario file: a path, or a name under tests/ (e.g. 'learned' -> tests/learned-scenarios.md)
+  $Scen = @($File, "$Tests/$File", "$Tests/$File-scenarios.md", "$Tests/$File.md") | Where-Object { Test-Path $_ -PathType Leaf } | Select-Object -First 1
+  if (-not $Scen) { Write-Host "scenario file not found: $File"; exit 1 }
+}
 $Lines = Get-Content $Scen -Encoding utf8
 $Tmp = Join-Path ([IO.Path]::GetTempPath()) "dreamteam-scenarios-$PID"; New-Item -ItemType Directory -Force $Tmp | Out-Null
 
@@ -48,8 +52,9 @@ function Invoke-Claude([string]$PromptFile, [string]$OutFile) { # -> exit code (
 
 if ($List) { Get-Ids; exit 0 }
 if (-not $Ids) {
-  Write-Host "usage: pwsh tests/run-scenarios.ps1 [-List] [-Extract] [-TimeoutSec 180] <ID ...>   e.g. S49 S50 GroundingA"
+  Write-Host "usage: pwsh tests/run-scenarios.ps1 [-List] [-Extract] [-TimeoutSec 180] [-File <name|path>] <ID ...>   e.g. S49 S50 GroundingA"
   Write-Host "  -List = print scenario IDs; -Extract = show parsed block + cited files, no model calls"
+  Write-Host "  -File = alternate scenario file (default tests/scenarios.md; 'learned' -> tests/learned-scenarios.md)"
   Write-Host "COST: each selected scenario spends TWO headless 'claude -p' model calls (billed). No default set."
   exit 1
 }

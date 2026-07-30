@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Live spot-check runner for tests/scenarios.md - executes selected scenarios as headless dry-runs.
 # Each scenario = TWO billed `claude -p` calls (run + judge). No default set - IDs are explicit.
-# Usage: bash tests/run-scenarios.sh [--list] [--extract] <ID ...>   e.g. S49 S50 GroundingA
+# Usage: bash tests/run-scenarios.sh [--list] [--extract] [--file <name|path>] <ID ...>   e.g. S49 S50 GroundingA
 set -euo pipefail
 TESTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(dirname "$TESTS")"
@@ -10,13 +10,14 @@ TIMEOUT_SECS="${TIMEOUT_SECS:-180}"
 TMP="$(mktemp -d)"
 
 usage() {
-  echo "usage: bash tests/run-scenarios.sh [--list] [--extract] <ID ...>   e.g. S49 S50 GroundingA"
+  echo "usage: bash tests/run-scenarios.sh [--list] [--extract] [--file <name|path>] <ID ...>   e.g. S49 S50 GroundingA"
   echo "  --list      print available scenario IDs and exit"
   echo "  --extract   print each ID's parsed block + cited files and exit (no model calls)"
+  echo "  --file      alternate scenario file (default tests/scenarios.md; 'learned' -> tests/learned-scenarios.md)"
   echo "  TIMEOUT_SECS=$TIMEOUT_SECS per claude call (env-overridable)"
   echo "COST: each selected scenario spends TWO headless 'claude -p' model calls (billed)."
 }
-ids_available() { grep -oE '^## (S[0-9]+|Grounding [AB]) ' "$SCEN" | sed 's/^## //; s/ *$//; s/Grounding /Grounding/'; }
+ids_available() { grep -oE '^## (S[0-9]+|Grounding [AB]) ' "$SCEN" | sed 's/^## //; s/ *$//; s/Grounding /Grounding/' || true; }  # blockless file (all learned rows dropped) is a valid empty list, not a set -e abort
 canon_id() {
   local want c; want="$(printf '%s' "$1" | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')"
   ids_available | while read -r c; do
@@ -85,13 +86,25 @@ run_one() { # $1 = raw ID
   esac
 }
 
-EXTRACT=0; IDS=()
-for a in "$@"; do case "$a" in
-  --list) ids_available; exit 0;;
+EXTRACT=0; LIST=0; FILE=''; WANT_FILE=0; IDS=()
+for a in "$@"; do
+  if [ "$WANT_FILE" = 1 ]; then FILE="$a"; WANT_FILE=0; continue; fi
+  case "$a" in
+  --list) LIST=1;;
   --extract) EXTRACT=1;;
+  --file) WANT_FILE=1;;
   -h|--help) usage; exit 0;;
   *) IDS+=("$a");;
 esac; done
+if [ "$WANT_FILE" = 1 ]; then echo "--file needs a value" >&2; exit 1; fi
+if [ -n "$FILE" ]; then # alternate scenario file: a path, or a name under tests/ (e.g. 'learned' -> tests/learned-scenarios.md)
+  SCEN=''
+  for c in "$FILE" "$TESTS/$FILE" "$TESTS/$FILE-scenarios.md" "$TESTS/$FILE.md"; do
+    if [ -f "$c" ]; then SCEN="$c"; break; fi
+  done
+  if [ -z "$SCEN" ]; then echo "scenario file not found: $FILE" >&2; exit 1; fi
+fi
+if [ "$LIST" = 1 ]; then ids_available; exit 0; fi
 [ "${#IDS[@]}" -gt 0 ] || { usage; exit 1; }
 for i in "${IDS[@]}"; do run_one "$i"; done
 printf '\n%-12s %-8s %s\n' ID RESULT NOTE
